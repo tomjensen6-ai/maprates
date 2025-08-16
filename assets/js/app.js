@@ -8,6 +8,56 @@
  * interactive maps, charts, and data analysis.
  */
 
+//Add security PASSWD for testing - until it go Live. 
+(function() {
+    // Simple password protection
+    const VALID_PASSWORDS = [
+        'maptest2024',     // Your password
+        'beta123',         // For tester 1
+        'preview456'       // For tester 2
+    ];
+    
+    // Check if user already authenticated
+    const isAuthenticated = sessionStorage.getItem('maprates_auth');
+    
+    if (!isAuthenticated) {
+        const password = prompt('Enter access code for MapRates Beta:');
+        
+        if (!password || !VALID_PASSWORDS.includes(password)) {
+            document.body.innerHTML = `
+                <div style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    font-family: Arial, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                ">
+                    <div style="text-align: center;">
+                        <h1>Access Denied</h1>
+                        <p>Invalid access code. Please contact the administrator.</p>
+                        <button onclick="location.reload()" style="
+                            margin-top: 20px;
+                            padding: 10px 20px;
+                            background: white;
+                            color: #667eea;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        ">Try Again</button>
+                    </div>
+                </div>
+            `;
+            throw new Error('Unauthorized');
+        }
+        
+        // Store authentication for this session
+        sessionStorage.setItem('maprates_auth', 'true');
+    }
+})();
+
+
 // ============================================================================
 // MODULE IMPORTS
 // ============================================================================
