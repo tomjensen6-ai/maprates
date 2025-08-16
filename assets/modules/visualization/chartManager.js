@@ -1,5 +1,5 @@
 // assets/modules/chartManager.js
-import { something } from '../../config/constants.js';
+import { CURRENCY_SYMBOLS } from '../../config/constants.js';
 
 class ChartManager {
     constructor() {
