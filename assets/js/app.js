@@ -12,9 +12,9 @@
 (function() {
     // Simple password protection
     const VALID_PASSWORDS = [
-        'maptest2024',     // Your password
-        'beta123',         // For tester 1
-        'preview456'       // For tester 2
+        'maptest2025!.',     // Your password
+        'beta258!.',         // For tester 1
+        'preview476!.'       // For tester 2
     ];
     
     // Check if user already authenticated
