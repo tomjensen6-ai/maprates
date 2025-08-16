@@ -12,26 +12,26 @@
 // MODULE IMPORTS
 // ============================================================================
 
-        import { CURRENCY_SYMBOLS, overlayColors, FLAG_MAP, requestThrottle } from './assets/config/constants.js';
-        import { SmartCacheManager, refreshCacheStats, clearCache, preloadPopularPairs, getCacheStatsForStatus } from './assets/modules/core/cacheManager.js';
-        import { MapManager, initializeMap } from './assets/modules/visualization/mapManager.js';
-        import { chartManager } from './assets/modules/visualization/chartManager.js';
-        import { technicalIndicators } from './assets/modules/analysis/technicalIndicators.js';
-        import { historicalDataManager } from './assets/modules/data/historicalDataManager.js';
-        import { aiPredictions } from './assets/modules/analysis/aiPredictions.js';
-        import { stateManager } from './assets/modules/core/stateManager.js';
-        import { overlayManager } from './assets/modules/visualization/overlayManager.js';
-        import { exchangeRateManager } from './assets/modules/core/exchangeRateManager.js';
-        import { countrySelectionManager } from './assets/modules/data/countrySelectionManager.js';
-        import { progressManager } from './assets/modules/ui/progressManager.js';
-        import { uiManager } from './assets/modules/ui/uiManager.js';
-        import mapInteractionManager from './assets/modules/ui/mapInteractionManager.js';
-        import apiConfigManager from './assets/modules/core/apiConfigManager.js';
-        import premiumFeaturesManager from './assets/modules/core/premiumFeaturesManager.js';
-        import chartUIManager from './assets/modules/ui/chartUIManager.js';
-        import notificationManager from './assets/modules/ui/notificationManager.js';
-        import modalManager from './assets/modules/ui/modalManager.js';
-        import dataExportManager from './assets/modules/ui/dataExportManager.js';
+        import { CURRENCY_SYMBOLS, overlayColors, FLAG_MAP, requestThrottle } from '../config/constants.js';
+        import { SmartCacheManager, refreshCacheStats, clearCache, preloadPopularPairs, getCacheStatsForStatus } from '../modules/core/cacheManager.js';
+        import { MapManager, initializeMap } from '../modules/visualization/mapManager.js';
+        import { chartManager } from '../modules/visualization/chartManager.js';
+        import { technicalIndicators } from '../modules/analysis/technicalIndicators.js';
+        import { historicalDataManager } from '../modules/data/historicalDataManager.js';
+        import { aiPredictions } from '../modules/analysis/aiPredictions.js';
+        import { stateManager } from '../modules/core/stateManager.js';
+        import { overlayManager } from '../modules/visualization/overlayManager.js';
+        import { exchangeRateManager } from '../modules/core/exchangeRateManager.js';
+        import { countrySelectionManager } from '../modules/data/countrySelectionManager.js';
+        import { progressManager } from '../modules/ui/progressManager.js';
+        import { uiManager } from '../modules/ui/uiManager.js';
+        import mapInteractionManager from '../modules/ui/mapInteractionManager.js';
+        import apiConfigManager from '../modules/core/apiConfigManager.js';
+        import premiumFeaturesManager from '../modules/core/premiumFeaturesManager.js';
+        import chartUIManager from '../modules/ui/chartUIManager.js';
+        import notificationManager from '../modules/ui/notificationManager.js';
+        import modalManager from '../modules/ui/modalManager.js';
+        import dataExportManager from '../modules/ui/dataExportManager.js';
 
         
                
