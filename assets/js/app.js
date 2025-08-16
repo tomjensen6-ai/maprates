@@ -1408,32 +1408,50 @@
                 window.apiConfigManager.init();
             }
             
-            // Get API key from the centralized module
-            if (window.apiConfigManager && typeof window.apiConfigManager.getAPIKey === 'function') {
-                EXCHANGERATE_HOST_API_KEY = window.apiConfigManager.getAPIKey('exchangeratehost');
-                source = 'apiConfigManager.getAPIKey()';
+            // Check if we're in production mode (using proxy)
+            const isProduction = window.apiConfigManager && window.apiConfigManager.isProduction;
+            
+            if (isProduction) {
+                // Production mode - no API key needed, proxy handles authentication
+                console.info('✅ Running in PRODUCTION mode with secure proxy');
+                console.info('🔐 API authentication handled by Vercel proxy');
+                source = 'Proxy Authentication';
+                EXCHANGERATE_HOST_API_KEY = 'PROXY'; // Set a placeholder value
                 
-                if (!EXCHANGERATE_HOST_API_KEY) {
-                    console.error('❌ No API key found in apiConfigManager for exchangeratehost');
-                    console.info('💡 Add the key to apiConfigManager.providers.exchangeratehost.apiKey');
+                // Optional: Show a success notification
+                if (window.notificationManager) {
+                    window.notificationManager.showSuccess('Connected to secure proxy server');
                 }
             } else {
-                console.error('❌ apiConfigManager not available or getAPIKey method missing');
-            }
-            
-            if (!EXCHANGERATE_HOST_API_KEY) {
-                console.error('❌ No API key found for exchangeratehost');
-                // Show user-friendly message
-                if (window.notificationManager) {
-                    window.notificationManager.showWarning('API configuration missing. Some features may be limited.');
+                // Development mode - need API key for direct access
+                console.info('🔧 Running in DEVELOPMENT mode');
+                
+                // Get API key from the centralized module
+                if (window.apiConfigManager && typeof window.apiConfigManager.getAPIKey === 'function') {
+                    EXCHANGERATE_HOST_API_KEY = window.apiConfigManager.getAPIKey('exchangeratehost');
+                    source = 'apiConfigManager.getAPIKey()';
+                    
+                    if (!EXCHANGERATE_HOST_API_KEY) {
+                        console.warn('⚠️ No API key found for local development');
+                        console.info('💡 Add the key to apiConfigManager.providers.exchangeratehost.apiKey');
+                        console.info('💡 Or set it in localStorage: localStorage.setItem("exchangeRateApiKey", "your-key")');
+                        
+                        // Show user-friendly message for development
+                        if (window.notificationManager) {
+                            window.notificationManager.showWarning('API key needed for local development. Some features may be limited.');
+                        }
+                    }
+                } else {
+                    console.error('❌ apiConfigManager not available or getAPIKey method missing');
                 }
             }
-
+            
             // Log status (not the actual key!)
             console.info(`✅ API Key initialization: ${source}`);
-            console.info(`📝 Key status: ${EXCHANGERATE_HOST_API_KEY ? 'Loaded successfully' : '⚠️ Missing - API calls will fail'}`);
+            console.info(`📝 Status: ${EXCHANGERATE_HOST_API_KEY ? (isProduction ? 'Proxy Active' : 'Key Loaded') : '⚠️ Missing - API calls may fail'}`);
             
-            if (DEBUG && DEBUG.enabled) {
+            if (DEBUG && DEBUG.enabled && !isProduction) {
+                // Only show key details in development mode
                 DEBUG.log(`API Key last 4 chars: ...${EXCHANGERATE_HOST_API_KEY?.slice(-4)}`);
             }
             
