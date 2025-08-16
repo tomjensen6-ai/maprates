@@ -1,6 +1,6 @@
 // overlayManager.js - Manages currency overlays for charts
-import { overlayColors } from '../../assets/config/constants.js';
-import { CURRENCY_SYMBOLS } from '../../assets/config/constants.js';
+import { overlayColors } from '../../config/constants.js';
+import { CURRENCY_SYMBOLS } from '../../config/constants.js';
 
 class OverlayManager {
     constructor() {
