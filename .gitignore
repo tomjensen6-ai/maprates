@@ -1,0 +1,428 @@
+# ============================================================================
+# CRITICAL SECURITY - API KEYS & SECRETS
+# ============================================================================
+# NEVER commit API keys, passwords, or sensitive configuration
+**/apiConfigManager.js
+**/apiConfigManager.local.js
+**/config.js
+**/config.local.js
+**/secrets.js
+**/secrets.json
+**/credentials.js
+**/credentials.json
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+api_key.txt
+api-keys/
+secrets/
+credentials/
+private/
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.production
+.env.staging
+.env.development
+.env.test
+*.env
+env.js
+environment.js
+
+# Archives and backups - NEVER upload
+*Archive*/
+*archive*/
+*backup*/
+*Backup*/
+*copy*.html
+*copy.html
+debug*.html
+*old*
+*OLD*
+001-*/
+
+# Authentication & OAuth
+auth.json
+auth.config.js
+oauth-token.json
+token.json
+tokens/
+.auth/
+
+# Database credentials
+database.json
+db.config.js
+mongodb.config.js
+mysql.config.js
+postgres.config.js
+redis.config.js
+*.db
+*.sqlite
+*.sqlite3
+
+# AWS / Cloud credentials
+.aws/
+.serverless/
+aws-exports.js
+awsconfiguration.json
+google-services.json
+GoogleService-Info.plist
+service-account-*.json
+firebase-config.js
+firebase.json
+.firebaserc
+
+# Payment processing
+stripe-keys.js
+paypal-config.js
+square-config.js
+payment-config.js
+
+# ============================================================================
+# BUILD ARTIFACTS & DEPENDENCIES
+# ============================================================================
+# Node modules - HUGE size, always regenerate from package.json
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.webpack/
+.serverless/
+.fusebox/
+.dynamodb/
+.vuepress/dist
+.temp/
+.tmp/
+*.bundle.js
+*.chunk.js
+
+# ============================================================================
+# OPERATING SYSTEM FILES
+# ============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+.AppleDouble
+.LSOverride
+.DocumentRevisions-V100
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+[Dd]esktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# IDE & EDITOR FILES
+# ============================================================================
+# Visual Studio Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# JetBrains IDEs (IntelliJ, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# Vim
+*.swp
+*.swo
+*.swn
+*.bak
+*~
+.netrwhist
+Session.vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.org-id-locations
+*_archive
+*_flymake.*
+/eshell/history
+/eshell/lastdir
+
+# Xcode
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# ============================================================================
+# LOGS & TEMPORARY FILES
+# ============================================================================
+*.log
+*.log.*
+logs/
+log/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm/
+.yarn/
+.pnpm-debug.log*
+*.pid
+*.seed
+*.pid.lock
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+.hypothesis/
+.pytest_cache/
+.phpunit.result.cache
+nosetests.xml
+coverage.xml
+*.coveragerc
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.original
+*.save
+.grunt/
+.sass-cache/
+*.css.map
+*.js.map
+
+# ============================================================================
+# PERSONAL & PRIVATE DATA
+# ============================================================================
+# Personal information
+personal/
+private/
+confidential/
+*.personal
+*.private
+*_BACKUP_*
+*_LOCAL_*
+*_REMOTE_*
+TODO.md
+NOTES.md
+notes.txt
+.notes/
+
+# User uploads (could contain sensitive data)
+uploads/
+uploaded_files/
+user_uploads/
+public/uploads/
+
+# Session data
+sessions/
+sess_*
+*.session
+
+# Cache that might contain sensitive data
+.cache/
+cache/
+*.cache
+
+# ============================================================================
+# VERSION CONTROL CONFLICTS
+# ============================================================================
+*.orig
+*.rej
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
+# Git
+.git/
+.gitattributes
+.gitmodules
+*.patch
+
+# SVN
+.svn/
+
+# Mercurial
+.hg/
+.hgignore
+.hgrc
+
+# ============================================================================
+# ARCHIVES & PACKAGES
+# ============================================================================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.war
+*.ear
+
+# ============================================================================
+# MAPRATES SPECIFIC
+# ============================================================================
+# Your specific API configuration files
+assets/modules/core/apiConfigManager.js
+assets/modules/core/apiConfigManager.local.js
+assets/modules/core/config.js
+
+# Any file with 'local' in name (your convention for local-only files)
+*.local.*
+*.local
+
+# API usage tracking that might reveal patterns
+api-usage-stats.json
+usage-data.json
+
+# Map data cache (if contains paid/proprietary data)
+map-cache/
+tiles-cache/
+
+# User preferences that might contain personal info
+user-preferences.json
+localStorage-backup.json
+
+# ============================================================================
+# SECURITY SCANNERS & REPORTS
+# ============================================================================
+# Security audit reports (might reveal vulnerabilities)
+security-audit.json
+vulnerability-report.json
+.scannerwork/
+dependency-check-report.html
+
+# ============================================================================
+# DOCKER & CONTAINERS
+# ============================================================================
+.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ============================================================================
+# MISCELLANEOUS
+# ============================================================================
+# Prevent accidental commit of .gitignore itself after adding secrets
+.gitignore.local
+
+# Binary files that shouldn't be in repo
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+
+# Database dumps
+*.sql
+*.dump
+*.mongodb
+
+# SSL Certificates
+*.pem
+*.key
+*.csr
+*.crt
+*.cer
+*.der
+*.p7b
+*.p7c
+*.p12
+*.pfx
+
+# End of Ultimate Secure .gitignore
+# Last updated: 2024
+# Remember: When in doubt, exclude it!assets/config/apiConfig.local.js

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapRates Pro - Global Currency Exchange Platform</title>
+    <link rel="icon" type="image/png" href="./maprates-icon.png">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/technicalindicators/3.1.0/browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    
+    <!-- Data Files -->
+    <script src="./countryToCurrency.js"></script>
+    <script src="./idNormalizationMap.js"></script>
+    
+    <!-- Main Application -->
+    <script type="module" src="./assets/js/app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <img src="./maprates-icon.png" alt="MapRates" style="width: 128px; height: 128px; object-fit: contain;">
+                    <span style="font-weight: 600; letter-spacing: -0.5px;">MapRates</span>
+                    <span style="background: linear-gradient(45deg, #1a73e8, #34a853); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Pro</span>
+                </div>
+            </h1>
+            <p>Click any country on the map or use dropdowns to get live exchange rates</p>
+        </div>
+
+        <div class="app-container">
+            <!-- Compact Header -->
+            <div class="compact-header">
+                <div class="currency-flow">
+                    <span>🏠</span>
+                    <select id="homeCountry">
+                        <option value="">Select home...</option>
+                    </select>
+                    <span class="flow-arrow">→</span>
+                    <span>🎯</span>
+                    <select id="destinationCountry">
+                        <option value="">Select destination...</option>
+                    </select>
+                    <button id="swapBtnCompact" class="swap-btn" title="Swap currencies">⇄</button>
+                </div>
+                
+                <div class="live-rate-display">
+                    <span>💰</span>
+                    <input type="number" id="compactAmount" value="1" min="0" step="any">
+                    <span>=</span>
+                    <span id="compactResult">Select currencies</span>
+                </div>
+                
+                <div class="quick-actions">
+                    <button id="showChartsBtn" class="action-btn">📈 Charts</button>
+                    <!-- <button id="showAPIBtn" class="action-btn secondary">🔧 API</button> -->
+                    <!-- <button onclick="clearAllCaches()" class="action-btn secondary" style="background: #ea4335; color: white;">🗑️ Clear Cache</button> -->
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container-primary">
+                <h2>Click countries to select • Professional currency analysis</h2>
+                <div id="mapStatus" class="map-status" style="display: none;">
+                    🌍 Interactive Map • Click countries for instant analysis
+                </div>
+                
+                <!-- Map wrapper with proper sizing -->
+                <div style="position: relative; width: 100%; max-width: 900px; margin: 0 auto;">
+                    <div id="mapLoading" class="loading">Loading world map...</div>
+                    <svg id="worldMap" width="900" height="500" style="display: none; width: 100%; height: auto;"></svg>
+                    
+                    <!-- Reset Button - Top Right Corner -->
+                    <button id="mapResetBtn" class="map-reset-btn" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        z-index: 200;
+                        background: rgba(255, 255, 255, 0.95);
+                        backdrop-filter: blur(10px);
+                        color: #1a73e8;
+                        border: 2px solid #1a73e8;
+                        border-radius: 8px;
+                        padding: 8px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                        transition: all 0.2s ease;
+                        width: 36px;
+                        height: 36px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    " title="Reset map view">
+                        🎯
+                    </button>
+
+                    <!-- Map Control Buttons - Positioned over the map -->
+                    <div id="mapControlsOverlay" style="
+                        position: absolute;
+                        bottom: 20px;
+                        left: 20px;
+                        z-index: 100;
+                        display: flex;
+                        gap: 12px;
+                    ">
+                        <button id="addDestinationBtn" class="add-destination-btn" style="
+                            display: none;
+                            background: rgba(26, 115, 232, 0.95);
+                            backdrop-filter: blur(10px);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            padding: 10px 16px;
+                            font-weight: 600;
+                            font-size: 14px;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                            transition: all 0.3s ease;
+                        ">
+                            ➕ Add Another Destination <span id="destinationCount">(2/5)</span>
+                        </button>
+                        <button id="resetAllBtn" class="reset-destinations-btn" style="
+                            display: none;
+                            background: rgba(255, 255, 255, 0.95);
+                            backdrop-filter: blur(10px);
+                            color: #ea4335;
+                            border: 2px solid #ea4335;
+                            border-radius: 12px;
+                            padding: 10px 16px;
+                            font-weight: 600;
+                            font-size: 14px;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                            transition: all 0.3s ease;
+                        ">
+                            🗑️ Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Destinations list -->
+                <div id="destinationsList" style="padding: 0 24px; margin-top: 20px;"></div>
+            </div>
+
+            <!-- Exchange Results -->
+            <div id="exchangeResult" class="exchange-result" style="display: none;">
+                <div class="currency-calculator">
+                    <div class="calculator-row">
+                        <input type="number" id="fromAmount" value="1" min="0" step="any" placeholder="Amount">
+                        <span id="fromCurrency">USD</span>
+                        <button id="swapBtn" class="swap-btn" title="Swap currencies">⇄</button>
+                        <span id="toAmount">0.00</span>
+                        <span id="toCurrency">EUR</span>
+                    </div>
+                </div>
+                <div class="exchange-rate" id="rateDisplay"></div>
+                <div class="exchange-details" id="rateDetails"></div>
+                
+                <div class="chart-actions">
+                    <button id="showChartBtn" class="show-chart-btn" onclick="showHistoricalChart()">
+                        📈 Show Historical Chart
+                    </button>
+                    <button id="showAPIConfigBtn" class="show-chart-btn" onclick="showAPIConfig()" style="margin-left: 12px; background: var(--surface-primary); border: 2px solid var(--success-green); color: var(--success-green);">
+                        🔧 API Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div id="chartContainer" class="chart-container" style="display: none;">
+                <div class="chart-header">
+                    <h3>📈 Historical Exchange Rate</h3>
+                    <div class="chart-controls">
+                        <div class="timeframe-buttons">
+                            <button class="timeframe-btn active" data-period="7">7D</button>
+                            <button class="timeframe-btn" data-period="30">1M</button>
+                            <button class="timeframe-btn" data-period="90">3M</button>
+                            <button class="timeframe-btn" data-period="365">1Y</button>
+                        </div>
+                        <div class="indicator-controls" style="display: flex; gap: 8px; align-items: center;">
+                            <button onclick="toggleIndicator('sma')" class="indicator-btn" data-indicator="sma">📈 SMA</button>
+                            <button onclick="toggleIndicator('bollinger')" class="indicator-btn" data-indicator="bollinger">📊 Bollinger</button>
+                            <button onclick="toggleIndicator('rsi')" class="indicator-btn" data-indicator="rsi">⚡ RSI</button>
+                            <button onclick="toggleAIPredictions()" class="indicator-btn" data-indicator="ai" style="background: linear-gradient(45deg, #4285f4, #34a853); color: white; border: none;">🤖 AI Forecast</button>
+                        </div>
+                        <button class="close-chart-btn" onclick="hideChart()">✕</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="historicalChart"></canvas>
+                </div>
+                <div class="chart-info">
+                    <div class="chart-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Highest:</span>
+                            <span class="stat-value" id="chartHighest">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Lowest:</span>
+                            <span class="stat-value" id="chartLowest">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Change:</span>
+                            <span class="stat-value" id="chartChange">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Config Panel -->
+            <div id="apiConfigPanel" class="chart-container" style="display: none;">
+                <div class="chart-header">
+                    <h3>🔧 API Configuration</h3>
+                    <div class="chart-controls">
+                        <button class="close-chart-btn" onclick="hideAPIConfig()">✕</button>
+                    </div>
+                </div>
+                <div style="padding: 24px;">
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                        Configure your API keys for real historical data. Free tiers available for all providers.
+                    </p>
+                    
+                    <div style="display: grid; gap: 20px;">
+                        <div style="padding: 16px; border: 1px solid var(--border-light); border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h4 style="margin: 0; color: var(--text-primary);">ExchangeRate-API</h4>
+                                <span style="color: var(--success-green); font-size: 0.875rem; font-weight: 500;">✅ Active</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px;">
+                                Free: 1,500 requests/month • No signup required
+                            </p>
+                            <div style="font-size: 0.75rem; color: var(--text-tertiary);">
+                                Usage: <span id="exchangerateUsage">0/1500</span> requests
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px; padding: 16px; background: var(--surface-secondary); border-radius: 8px;">
+                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary);">💾 Smart Cache Status</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: #34a853;" id="cacheHitRate">-</div>
+                                <div style="font-size: 0.75rem; color: #5f6368;">Hit Rate</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: #1a73e8;" id="cacheEntries">-</div>
+                                <div style="font-size: 0.75rem; color: #5f6368;">Cached Pairs</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: #f29900;" id="apiSavings">-</div>
+                                <div style="font-size: 0.75rem; color: #5f6368;">Requests Saved</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button onclick="refreshCacheStats()" style="background: #1a73e8; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 0.875rem; cursor: pointer;">🔄 Refresh Stats</button>
+                            <button onclick="clearCache()" style="background: #ea4335; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 0.875rem; cursor: pointer;">🗑️ Clear Cache</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error" style="display: none;"></div>
+        </div>
+    </div>
+</body>
+</html>
