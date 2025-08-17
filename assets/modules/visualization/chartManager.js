@@ -240,9 +240,9 @@ class ChartManager {
         }, 100);
     }
     // chart not go in 0px
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,  
+    // options: {
+       // responsive: true,
+       // maintainAspectRatio: false,  
         
     }
 
