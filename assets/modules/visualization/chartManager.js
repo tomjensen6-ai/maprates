@@ -239,13 +239,17 @@ class ChartManager {
             
             // Add reset zoom button
             this.addResetZoomButton();
-            // Force canvas resize on mobile
-            // this.forceCanvasResize();
             
-            // Listen for orientation changes
-            window.addEventListener('resize', () => this.forceCanvasResize());
+            // Force canvas resize on mobile
+            this.forceCanvasResize();
+            
+            // Listen for orientation changes with proper binding
+            const resizeHandler = () => this.forceCanvasResize();
+            window.removeEventListener('resize', resizeHandler);
+            window.addEventListener('resize', resizeHandler);
+            window.removeEventListener('orientationchange', resizeHandler);
             window.addEventListener('orientationchange', () => {
-                setTimeout(() => this.forceCanvasResize(), 300);
+                setTimeout(resizeHandler, 300);
             });
             
         }, 100);
@@ -531,7 +535,36 @@ class ChartManager {
             }
         };
     }
-
+    // Force proper canvas sizing on mobile devices
+    forceCanvasResize() {
+        const canvas = document.getElementById('historicalChart');
+        const container = document.getElementById('chartContainer');
+        
+        if (canvas && container) {
+            // Get container dimensions
+            const containerRect = container.getBoundingClientRect();
+            const containerHeight = Math.max(containerRect.height || 400, 400);
+            
+            // Force explicit canvas dimensions
+            canvas.style.width = '100%';
+            canvas.style.height = `${containerHeight}px`;
+            canvas.style.display = 'block';
+            
+            // Mobile-specific adjustments
+            if (window.innerWidth <= 768) {
+                canvas.style.minHeight = '350px';
+                canvas.setAttribute('height', containerHeight);
+                canvas.setAttribute('width', containerRect.width);
+            }
+            
+            // Force Chart.js to recognize new dimensions
+            if (this.currentChart) {
+                requestAnimationFrame(() => {
+                    this.currentChart.resize();
+                });
+            }
+        }
+    }
     
 
     // Update chart statistics
@@ -604,137 +637,6 @@ class ChartManager {
         this.currentChart.update();
     }
 }
-
-// FIX 1: Force Canvas Height (Add to chartManager.js after createChart function)
-// The canvas might have 0 height even with maintainAspectRatio: false
-
-// Add this right BEFORE creating the chart (in createChart function, around line 190):
-setTimeout(() => {
-    const ctx = document.getElementById('historicalChart');
-    if (!ctx) {
-        console.error('Chart canvas not found');
-        this.showChartError('Chart canvas not found');
-        return;
-    }
-    
-    // ADD THIS SECTION TO FORCE CANVAS HEIGHT
-    // Force minimum height on mobile BEFORE creating chart
-    if (window.innerWidth <= 768) {
-        ctx.style.minHeight = '300px';
-        ctx.style.height = '400px';
-        ctx.style.width = '100%';
-        ctx.style.display = 'block';
-        
-        // Also force the parent container
-        const container = document.getElementById('chartContainer');
-        if (container) {
-            container.style.minHeight = '400px';
-            container.style.display = 'block';
-        }
-    }
-    
-    const context = ctx.getContext('2d');
-    // ... rest of your chart creation code
-
-
-// FIX 2: Hide Chart Container Initially (Add to your main CSS or styles.css)
-/* Chart should be hidden until countries are selected */
-#chartContainer {
-    display: none; /* Hidden by default */
-}
-
-#chartContainer.active {
-    display: block; /* Show when active */
-}
-
-// Then in your JavaScript, when showing the chart (in loadHistoricalData or similar):
-function showChart() {
-    const container = document.getElementById('chartContainer');
-    if (container) {
-        container.classList.add('active');
-        container.style.display = 'block'; // Force display
-    }
-}
-
-
-// FIX 3: Hide API Configuration in Production
-// In your HTML, find the API Configuration section and add this check:
-
-// If it's in your index.html, wrap it like this:
-<div id="apiConfig" class="api-config-section" style="display: none;">
-    <!-- API Configuration content -->
-</div>
-
-// Then in your JavaScript (app.js or initialization code):
-document.addEventListener('DOMContentLoaded', function() {
-    // Hide API config in production
-    const apiConfigSection = document.getElementById('apiConfig');
-    const isProduction = window.location.hostname === 'tomjensen6-ai.github.io';
-    
-    if (apiConfigSection) {
-        if (isProduction) {
-            apiConfigSection.style.display = 'none';
-            apiConfigSection.remove(); // Completely remove from DOM
-        } else {
-            // Only show in development
-            apiConfigSection.style.display = 'block';
-        }
-    }
-});
-
-
-// Debug function to check what's happening with the canvas
-
-debugCanvasIssue() {
-    const canvas = document.getElementById('historicalChart');
-    const container = document.getElementById('chartContainer');
-    const wrapper = document.querySelector('.chart-wrapper');
-    
-    console.log('🔍 Canvas Debug Info:');
-    console.log('Canvas element:', canvas);
-    console.log('Canvas computed style:', canvas ? window.getComputedStyle(canvas) : 'No canvas');
-    console.log('Canvas dimensions:', {
-        offsetHeight: canvas?.offsetHeight,
-        offsetWidth: canvas?.offsetWidth,
-        clientHeight: canvas?.clientHeight,
-        clientWidth: canvas?.clientWidth,
-        styleHeight: canvas?.style.height,
-        styleWidth: canvas?.style.width
-    });
-    console.log('Container display:', container?.style.display);
-    console.log('Container dimensions:', {
-        offsetHeight: container?.offsetHeight,
-        offsetWidth: container?.offsetWidth
-    });
-    console.log('Wrapper innerHTML length:', wrapper?.innerHTML.length);
-    
-    // Try to force visibility
-    if (canvas) {
-        canvas.style.height = '400px !important';
-        canvas.style.minHeight = '400px !important';
-        canvas.style.display = 'block !important';
-        console.log('✅ Forced canvas styles applied');
-    }
-    
-    // Check if Chart.js instance exists
-    if (this.currentChart) {
-        console.log('Chart instance exists:', this.currentChart);
-        console.log('Chart canvas:', this.currentChart.canvas);
-        console.log('Chart height:', this.currentChart.height);
-        console.log('Chart width:', this.currentChart.width);
-        
-        // Force resize
-        this.currentChart.resize();
-        console.log('✅ Chart resize triggered');
-    } else {
-        console.log('❌ No chart instance found');
-    }
-}
-
-// Call this debug function from your debug button:
-document.getElementById('debugButton')?.addEventListener('click', () => {
-    chartManager.debugCanvasIssue();
-});
 
 // Create singleton instance
 const chartManager = new ChartManager();
