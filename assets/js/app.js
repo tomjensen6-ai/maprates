@@ -4617,27 +4617,7 @@ currentChart.update('none');
             });
         }
         
-        // Swap currencies in calculator
-        function swapCalculatorCurrencies() {
-            const currency1 = document.getElementById('calcCurrency1').textContent;
-            const currency2 = document.getElementById('calcCurrency2').textContent;
-            const amount1 = document.getElementById('calcAmount1').value;
-            
-            // Swap currencies
-            document.getElementById('calcCurrency1').textContent = currency2;
-            document.getElementById('calcCurrency2').textContent = currency1;
-            
-            // Keep the amount in first field and recalculate
-            document.getElementById('calcAmount1').value = amount1;
-            calculateConversion('from');
-            
-            // Animate the swap
-            const widget = document.getElementById('miniCalculator');
-            widget.style.transform = 'rotateY(360deg)';
-            setTimeout(() => {
-                widget.style.transform = '';
-            }, 300);
-        }
+        
         
         // Add current calculation to comparison list
         function addToComparison() {
