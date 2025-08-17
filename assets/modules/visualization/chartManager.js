@@ -262,6 +262,7 @@ class ChartManager {
     // }
 
     // Get chart options configuration
+    // Get chart options configuration
     getChartOptions(destCurrency, days) {
         return {
             responsive: true,
@@ -344,51 +345,6 @@ class ChartManager {
                                 return null;
                             }
                             
-                            // Format based on type
-                            if (label.includes('Forecast') || label.includes('Trend Projection') || label.includes('Statistical Projection')) {
-                                const currency = label.match(/([A-Z]{3})/)?.[0] || '';
-                                return `🤖 ${currency} Forecast: ${value.toFixed(4)}`;
-                            } else if (label.includes('(normalized)')) {
-                                // SHOW normalized overlays with proper formatting
-                                const match = label.match(/([A-Z]{3}) to ([A-Z]{3})/);
-                                if (match) {
-                                    const [, from, to] = match;
-                                    // Add a small indicator that it's normalized for transparency
-                                    return `${from} → ${to}: ${value.toFixed(4)} (scaled)`;
-                                }
-                                return `${label.replace('(normalized)', '')}: ${value.toFixed(4)}`;
-                            } else {
-                                // Regular currency pairs
-                                const match = label.match(/([A-Z]{3}) to ([A-Z]{3})/);
-                                if (match) {
-                                    const [, from, to] = match;
-                                    return `${from} → ${to}: ${value.toFixed(4)}`;
-                                }
-                                return `${label}: ${value.toFixed(4)}`;
-                            }
-                            
-                        },
-                        labelColor: function(context) {
-                            return {
-                                borderColor: context.dataset.borderColor,
-                                backgroundColor: context.dataset.borderColor,
-                                borderWidth: 2,
-                                borderRadius: 2
-                            };
-                        },
-                        // ENHANCE the label callback we just fixed above to include emoji indicators:
-                        label: function(context) {
-                            const label = context.dataset.label || '';
-                            const value = context.parsed.y;
-                            
-                            // Skip invalid values
-                            if (!value || !isFinite(value)) return null;
-                            
-                            // Skip confidence bands
-                            if (label.includes('Confidence')) {
-                                return null;
-                            }
-                            
                             // Determine if this is the main pair or an overlay
                             const datasetIndex = context.datasetIndex;
                             const isMain = datasetIndex === 0;
@@ -419,6 +375,14 @@ class ChartManager {
                                 return `${label}: ${value.toFixed(4)}`;
                             }
                         },
+                        labelColor: function(context) {
+                            return {
+                                borderColor: context.dataset.borderColor,
+                                backgroundColor: context.dataset.borderColor,
+                                borderWidth: 2,
+                                borderRadius: 2
+                            };
+                        },
                         footer: function(tooltipItems) {
                             if (!tooltipItems.length) return '';
                             
@@ -437,7 +401,6 @@ class ChartManager {
                             }
                             return '';
                         },
-                        // ADD this afterFooter callback:
                         afterFooter: function(tooltipItems) {
                             if (!tooltipItems.length) return '';
                             
@@ -471,37 +434,69 @@ class ChartManager {
                     }
                 }
             },
-
-            // Force proper canvas sizing on mobile devices
-            forceCanvasResize() {
-                const canvas = document.getElementById('historicalChart');
-                const container = document.getElementById('chartContainer');
-                
-                if (canvas && container) {
-                    // Get container dimensions
-                    const containerRect = container.getBoundingClientRect();
-                    const containerHeight = Math.max(containerRect.height, 400);
-                    
-                    // Force explicit canvas dimensions
-                    canvas.style.width = '100%';
-                    canvas.style.height = `${containerHeight}px`;
-                    canvas.style.display = 'block';
-                    
-                    // Mobile-specific adjustments
-                    if (window.innerWidth <= 768) {
-                        canvas.style.minHeight = '350px';
-                        canvas.setAttribute('height', containerHeight);
-                        canvas.setAttribute('width', containerRect.width);
+            scales: {
+                x: {
+                    display: true,
+                    grid: {
+                        color: 'rgba(95, 99, 104, 0.1)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#5f6368',
+                        font: { size: 12 },
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: days > 90 ? 12 : (days > 30 ? 10 : 7)
                     }
-                    
-                    // Force Chart.js to recognize new dimensions
-                    if (this.currentChart) {
-                        requestAnimationFrame(() => {
-                            this.currentChart.resize();
-                        });
+                },
+                y: {
+                    display: true,
+                    grid: {
+                        color: 'rgba(95, 99, 104, 0.1)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#5f6368',
+                        font: { size: 12 },
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
                     }
                 }
             }
+        };
+    }
+
+    // Force proper canvas sizing on mobile devices
+    forceCanvasResize() {
+        const canvas = document.getElementById('historicalChart');
+        const container = document.getElementById('chartContainer');
+        
+        if (canvas && container) {
+            // Get container dimensions
+            const containerRect = container.getBoundingClientRect();
+            const containerHeight = Math.max(containerRect.height || 400, 400);
+            
+            // Force explicit canvas dimensions
+            canvas.style.width = '100%';
+            canvas.style.height = `${containerHeight}px`;
+            canvas.style.display = 'block';
+            
+            // Mobile-specific adjustments
+            if (window.innerWidth <= 768) {
+                canvas.style.minHeight = '350px';
+                canvas.setAttribute('height', containerHeight);
+                canvas.setAttribute('width', containerRect.width);
+            }
+            
+            // Force Chart.js to recognize new dimensions
+            if (this.currentChart) {
+                requestAnimationFrame(() => {
+                    this.currentChart.resize();
+                });
+            }
+        }
+    }
             
             scales: {
                 x: {
