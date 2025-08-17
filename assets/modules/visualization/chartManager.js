@@ -11,6 +11,7 @@ class ChartManager {
             '#ea4335', '#fbbc04', '#34a853', '#4285f4', '#9c27b0',
             '#ff6b35', '#00bcd4', '#795548', '#607d8b', '#e91e63'
         ];
+        this.resizeTimeout = null; // Add timeout tracker for resize debouncing
     }
 
     // Get current chart instance
@@ -243,29 +244,53 @@ class ChartManager {
             // Force canvas resize on mobile
             this.forceCanvasResize();
             
-            // Listen for orientation changes with proper binding
-            const resizeHandler = () => this.forceCanvasResize();
+            // Enhanced orientation change handling for iOS
+            const resizeHandler = () => {
+                // Only resize if chart still exists
+                if (this.currentChart && !this.currentChart._destroying) {
+                    this.forceCanvasResize();
+                }
+            };
+            
+            // Remove any existing listeners first
             window.removeEventListener('resize', resizeHandler);
-            window.addEventListener('resize', resizeHandler);
             window.removeEventListener('orientationchange', resizeHandler);
+            
+            // Add new listeners with iOS-specific handling
+            window.addEventListener('resize', () => {
+                clearTimeout(this.resizeTimeout);
+                this.resizeTimeout = setTimeout(resizeHandler, 250);
+            });
+            
+            // iOS Safari needs special handling for orientation changes
             window.addEventListener('orientationchange', () => {
-                setTimeout(resizeHandler, 300);
+                // Wait for orientation change to complete
+                setTimeout(() => {
+                    // Force a re-render of the chart
+                    if (this.currentChart && !this.currentChart._destroying) {
+                        const canvas = document.getElementById('historicalChart');
+                        if (canvas) {
+                            // Temporarily hide and show to force Safari to recalculate
+                            canvas.style.display = 'none';
+                            canvas.offsetHeight; // Force reflow
+                            canvas.style.display = 'block';
+                            
+                            // Now resize
+                            this.forceCanvasResize();
+                        }
+                    }
+                }, 500); // iOS needs more time for orientation animation
             });
             
         }, 100);
     }
-    // chart not go in 0px
-    // options: {
-       // responsive: true,
-       // maintainAspectRatio: false,  
-        
-    // }
-
+    
     // Get chart options configuration
     getChartOptions(destCurrency, days) {
         return {
             responsive: true,
             maintainAspectRatio: false,
+            aspectRatio: window.innerWidth <= 768 ? 1.5 : 2, // Better ratio for mobile
             interaction: {
                 mode: 'index',
                 intersect: false
@@ -470,29 +495,41 @@ class ChartManager {
         const canvas = document.getElementById('historicalChart');
         const container = document.getElementById('chartContainer');
         
-        if (canvas && container) {
-            // Get container dimensions
-            const containerRect = container.getBoundingClientRect();
-            const containerHeight = Math.max(containerRect.height || 400, 400);
+        if (canvas && container && this.currentChart) {
+            // Prevent resize during chart destruction
+            if (this.currentChart._destroying) return;
             
-            // Force explicit canvas dimensions
-            canvas.style.width = '100%';
-            canvas.style.height = `${containerHeight}px`;
-            canvas.style.display = 'block';
-            
-            // Mobile-specific adjustments
-            if (window.innerWidth <= 768) {
-                canvas.style.minHeight = '350px';
-                canvas.setAttribute('height', containerHeight);
-                canvas.setAttribute('width', containerRect.width);
-            }
-            
-            // Force Chart.js to recognize new dimensions
-            if (this.currentChart) {
-                requestAnimationFrame(() => {
+            // Get fresh container dimensions after orientation change
+            setTimeout(() => {
+                const containerRect = container.getBoundingClientRect();
+                const isPortrait = window.innerHeight > window.innerWidth;
+                
+                // Set different heights for portrait vs landscape
+                const targetHeight = isPortrait 
+                    ? Math.min(window.innerHeight * 0.5, 450)  // Portrait: 50% of viewport, max 450px
+                    : Math.min(window.innerHeight * 0.7, 350); // Landscape: 70% of viewport, max 350px
+                
+                // Force canvas to specific dimensions
+                canvas.style.width = '100%';
+                canvas.style.height = `${targetHeight}px`;
+                canvas.style.display = 'block';
+                canvas.style.visibility = 'visible';
+                
+                // Set canvas internal dimensions for sharp rendering
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = containerRect.width * dpr;
+                canvas.height = targetHeight * dpr;
+                
+                // Scale canvas back down using CSS
+                canvas.style.width = `${containerRect.width}px`;
+                canvas.style.height = `${targetHeight}px`;
+                
+                // Force Chart.js to update with new dimensions
+                if (this.currentChart && !this.currentChart._destroying) {
                     this.currentChart.resize();
-                });
-            }
+                    this.currentChart.update('none'); // Update without animation
+                }
+            }, 100); // Small delay to ensure DOM has updated after orientation change
         }
     }
     
