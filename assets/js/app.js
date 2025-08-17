@@ -4336,6 +4336,25 @@ currentChart.update('none');
             }
         };
 
+        // for better mobile experience
+        if ('ontouchstart' in window) {
+            // Enable better touch scrolling
+            document.querySelectorAll('.scrollable-section').forEach(el => {
+                el.style.scrollBehavior = 'smooth';
+            });
+            
+            // Make map more responsive to touch
+            const map = document.getElementById('worldMap');
+            if (map) {
+                let scale = 1;
+                map.addEventListener('gesturechange', (e) => {
+                    e.preventDefault();
+                    scale = e.scale;
+                    map.style.transform = `scale(${scale})`;
+                });
+            }
+        }
+
         // Make functions globally available
         window.exportChart = exportChart;
         window.exportConversions = exportConversions;
