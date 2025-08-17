@@ -1351,6 +1351,36 @@ body {
     }
 }
 
+/* Landscape Mode - Make map use full space */
+@media (max-width: 900px) and (orientation: landscape) {
+    /* Map takes most of the screen */
+    #worldMap, .map-container, svg#worldMap {
+        width: 100% !important;
+        height: 70vh !important;  /* 70% of viewport height */
+        max-height: none !important;
+        min-height: 400px !important;
+    }
+    
+    /* Remove unnecessary padding/margins */
+    .map-wrapper, .map-section {
+        padding: 5px !important;
+        margin: 0 !important;
+    }
+    
+    /* Hide or minimize other elements in landscape */
+    .header-section {
+        display: none;  /* Hide header to save space */
+    }
+    
+    /* Make the SVG scale properly */
+    svg#worldMap {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+    }
+}
+
+
 /* High contrast for better readability */
 @media (prefers-contrast: high) {
    :root {
