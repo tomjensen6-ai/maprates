@@ -1401,19 +1401,25 @@ body {
 }
 
 /* ============================================
-   FIX FOR MISSING CHART ON IPHONE
+   CHART VISIBILITY CONTROL
    ============================================ */
+
+/* Hide chart container by default */
+#chartContainer {
+    display: none;
+}
+
+/* Show only when chart-active class is added */
+#chartContainer.chart-active {
+    display: block !important;
+    min-height: 400px;
+}
+
 @media (max-width: 768px) {
-    /* Force chart to be visible on mobile */
-    #chartContainer, 
-    .chart-container,
-    #chartSection,
-    .chart-section {
+    /* Mobile chart sizing - ONLY when active */
+    #chartContainer.chart-active {
         display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        height: auto !important;
-        min-height: 300px !important;
+        min-height: 350px !important;
         overflow: visible !important;
     }
     
