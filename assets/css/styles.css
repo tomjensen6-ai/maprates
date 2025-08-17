@@ -1249,6 +1249,51 @@ body {
     }
 }
 
+/* Chart Section Layout */
+@media (max-width: 768px) {
+    /* Main chart section */
+    .chart-section {
+        padding: 10px;
+        background: white;
+        border-radius: 10px;
+        margin: 10px;
+    }
+    
+    /* Chart wrapper */
+    .chart-wrapper {
+        position: relative;
+        width: 100%;
+        padding-bottom: 75%; /* 4:3 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+    }
+    
+    .chart-wrapper canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Legend below chart */
+    .chart-legend {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+    
+    /* Fix cut-off "Trend Analysis" button */
+    .analysis-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 10px;
+    }
+}
+
 /* High contrast for better readability */
 @media (prefers-contrast: high) {
    :root {
