@@ -1241,36 +1241,34 @@
             const firstMainRate = mainData[0];
             
             activeOverlays.forEach((overlay, index) => {
-                if (overlay.data && overlay.visible) {
-                    console.log(`➕ Re-adding overlay: ${overlay.currency} with color ${overlay.color}`);
+            if (overlay.data && overlay.visible) {
+                console.log(`➕ Re-adding overlay: ${overlay.currency} with color ${overlay.color}`);
+                
+                try {
+                    // NO NORMALIZATION - USE ACTUAL RATES
+                    const actualRates = overlay.data.map(item => item.rate);
                     
-                    try {
-                        // Normalize the overlay data
-                        const firstOverlayRate = overlay.data[0].rate;
-                        const normalizedData = overlay.data.map(item => {
-                            const percentChange = ((item.rate / firstOverlayRate) - 1) * 100;
-                            return firstMainRate * (1 + percentChange / 100);
-                        });
-                        
-                        currentChart.data.datasets.push({
-                            label: `${homeCurrency.code} to ${overlay.currency}`,
-                            data: normalizedData,
-                            borderColor: overlay.color,
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: overlay.color,
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2
-                        });
-                    } catch (error) {
-                        console.error(`❌ Error adding overlay ${overlay.currency}:`, error);
-                    }
+                    currentChart.data.datasets.push({
+                        label: `${homeCurrency.code} to ${overlay.currency}`,
+                        data: actualRates, // ACTUAL RATES, NOT NORMALIZED
+                        borderColor: overlay.color,
+                        backgroundColor: 'transparent',
+                        borderWidth: 2, // Reduced from 3
+                        fill: false,
+                        tension: 0.2, // Reduced from 0.3
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: overlay.color,
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    });
+                    
+                    console.log(`✅ Added overlay ${overlay.currency}: First=${actualRates[0]}, Last=${actualRates[actualRates.length-1]}`);
+                } catch (error) {
+                    console.error(`❌ Error adding overlay ${overlay.currency}:`, error);
                 }
-            });
+            }
+        });
             
             // Only update if chart still exists
             if (currentChart && currentChart.update) {
