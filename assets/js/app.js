@@ -85,26 +85,6 @@
 
         
                
-        // ============================================================================
-        // DEBUG SYSTEM & APPLICATION CONFIGURATION
-        // ============================================================================
-
-        /**
-         * Professional Debug System
-         */
-        const DEBUG = {
-            enabled: false, // Will be set based on environment
-            log: function(...args) {
-                if (this.enabled) console.log(...args);
-            },
-            error: function(...args) {
-                console.error(...args); // Always show errors
-            },
-            warn: function(...args) {
-                if (this.enabled) console.warn(...args);
-            }
-        };
-
         /**
          * Application Configuration
          */
@@ -233,6 +213,12 @@
                 
                 console.log(`💾 Cached ${days}D chart data`);
             }
+        }
+
+        // Initialize cache system immediately
+        if (!window.chartCache) {
+            window.chartCache = new SmartChartCache();
+            console.log('📊 Chart cache system initialized');
         }
         
         // Initialize StateManager sync helper
@@ -1843,10 +1829,39 @@
                             uiManager.updateCurrencyDisplay(homeCurrency.code, destCurrency.code);
                         }
                     }
+                    
+                    // ========== ADD PRELOAD TRIGGER HERE ==========
+                    // Start preloading chart data for instant switching
+                    const homeCurrency = getCurrencyForCountry(homeCountry.name);
+                    const destCurrency = getCurrencyForCountry(destinationCountry.name);
+                    
+                    if (homeCurrency && destCurrency) {
+                        // Check if we need to preload for this currency pair
+                        const pairKey = `${homeCurrency.code}_${destCurrency.code}`;
+                        
+                        if (!window.preloadedPairs || window.preloadedPairs !== pairKey) {
+                            window.preloadedPairs = pairKey;
+                            
+                            // Delay preload to not interfere with initial calculations
+                            setTimeout(() => {
+                                console.log(`🚀 Starting background preload for ${pairKey}`);
+                                
+                                // Preload main timeframes
+                                if (typeof preloadAllTimeframes === 'function') {
+                                    preloadAllTimeframes();
+                                }
+                                
+                                // Also preload common overlay currencies
+                                if (typeof preloadOverlayCurrencies === 'function') {
+                                    preloadOverlayCurrencies();
+                                }
+                            }, 2000); // 2 second delay to let all initial updates complete
+                        }
+                    }
+                    // ========== END OF PRELOAD TRIGGER ==========
                 } 
             }, 100); 
-        } 
-
+        }
         
         async function updateMultipleExchangeRates() {
             console.log('🔍 updateMultipleExchangeRates called');
