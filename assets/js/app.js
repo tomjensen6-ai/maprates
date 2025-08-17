@@ -1253,7 +1253,7 @@
                         });
                         
                         currentChart.data.datasets.push({
-                            label: `${homeCurrency.code} to ${overlay.currency} (normalized)`,
+                            label: `${homeCurrency.code} to ${overlay.currency}`,
                             data: normalizedData,
                             borderColor: overlay.color,
                             backgroundColor: 'transparent',
@@ -1396,20 +1396,17 @@
                             // ADD THE MISSING VARIABLE
                             const firstOverlayRate = overlay.data[0].rate;
                             
-                            // NORMALIZATION: Convert to percentage changes
-                            const normalizedData = overlay.data.map((item, dataIndex) => {
-                                const percentChange = ((item.rate / firstOverlayRate) - 1) * 100;
-                                return firstMainRate * (1 + percentChange / 100);
-                            });
+                            // USE ACTUAL RATES - NO NORMALIZATION FOR PROFESSIONAL TOOL
+                            const actualData = overlay.data.map(item => item.rate);
                             
                             console.log(`Adding overlay ${index + 1}: ${overlay.currency} with color ${overlay.color}`);
-                            console.log('- Normalized first value:', normalizedData[0]);
-                            console.log('- Normalized last value:', normalizedData[normalizedData.length - 1]);
+                            console.log('- First actual rate:', actualData[0]);
+                            console.log('- Last actual rate:', actualData[actualData.length - 1]);
                             
-                            // Create the dataset
+                            // Create the dataset with REAL rates
                             const overlayDataset = {
-                                label: `${homeCurrency.code} to ${overlay.currency} (normalized)`,
-                                data: normalizedData,
+                                label: `${homeCurrency.code} to ${overlay.currency}`,  // REMOVED "(normalized)"
+                                data: actualData,  // USE ACTUAL DATA, NOT NORMALIZED
                                 borderColor: overlay.color,
                                 backgroundColor: 'transparent',  // Changed from overlay.color + '33'
                                 borderWidth: 2,
