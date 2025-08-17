@@ -4512,8 +4512,8 @@ currentChart.update('none');
         function calculateConversion(direction) {
             const amount1Input = document.getElementById('calcAmount1');
             const amount2Input = document.getElementById('calcAmount2');
-            const currency1 = document.getElementById('calcCurrency1').textContent;
-            const currency2 = document.getElementById('calcCurrency2').textContent;
+            const currency1 = document.getElementById('calcCurrency1').value;
+            const currency2 = document.getElementById('calcCurrency2').value;
             
             // Get current exchange rate
             const rate = getExchangeRate(currency1, currency2);
@@ -4524,30 +4524,34 @@ currentChart.update('none');
             }
             
             if (direction === 'from') {
-                // Converting from currency1 to currency2
                 const amount1 = parseFloat(amount1Input.value) || 0;
                 const amount2 = amount1 * rate;
                 amount2Input.value = amount2.toFixed(2);
             } else {
-                // Converting from currency2 to currency1
                 const amount2 = parseFloat(amount2Input.value) || 0;
                 const amount1 = amount2 / rate;
                 amount1Input.value = amount1.toFixed(2);
             }
             
             // Update rate display
-            updateCalculatorRateDisplay(currency1, currency2, rate);
+            document.getElementById('calcRateInfo').textContent = 
+                `1 ${currency1} = ${rate.toFixed(4)} ${currency2}`;
         }
         
-        // Get exchange rate between any two currencies
-        function getExchangeRate(from, to) {
-            // First check if we have direct rate
-            if (window.exchangeRateManager) {
-                const rates = exchangeRateManager.getCurrentRates();
-                if (rates && rates[to]) {
-                    return rates[to];
-                }
-            }
+        function swapCalculatorCurrencies() {
+            const select1 = document.getElementById('calcCurrency1');
+            const select2 = document.getElementById('calcCurrency2');
+            const amount1 = document.getElementById('calcAmount1').value;
+            
+            // Swap values
+            const temp = select1.value;
+            select1.value = select2.value;
+            select2.value = temp;
+            
+            // Recalculate
+            document.getElementById('calcAmount1').value = amount1;
+            calculateConversion('from');
+        }
             
             // Fallback to stored conversion rate if it matches
             if (homeCountry && destinationCountry) {
@@ -4785,6 +4789,17 @@ selectCountryByName = function(countryName, type, providedFeature = null) {
                 });
             }
         }
+
+        // Ensure calculator is in body, not hidden div
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const calc = document.getElementById('miniCalculator');
+                if (calc && calc.parentElement.id === 'exchangeResult') {
+                    document.body.appendChild(calc);
+                    console.log('✅ Calculator moved to body');
+                }
+            }, 100);
+        });
 
         // Make functions globally available
         window.exportChart = exportChart;
