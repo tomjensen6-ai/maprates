@@ -4489,6 +4489,273 @@ currentChart.update('none');
             
             dataExportManager.exportConversions(conversions, homeCurrency, amount, 'csv');
         }
+
+        // ============= MINI CALCULATOR WIDGET =============
+        let calculatorComparisons = [];
+        let calculatorMinimized = false;
+        
+        // Initialize calculator with current currencies
+        function initializeCalculator() {
+            if (homeCountry && destinationCountry) {
+                const homeCurrency = getCurrencyForCountry(homeCountry.name);
+                const destCurrency = getCurrencyForCountry(destinationCountry.name);
+                
+                document.getElementById('calcCurrency1').textContent = homeCurrency.code;
+                document.getElementById('calcCurrency2').textContent = destCurrency.code;
+                
+                // Trigger initial calculation
+                calculateConversion('from');
+            }
+        }
+        
+        // Calculate conversion
+        function calculateConversion(direction) {
+            const amount1Input = document.getElementById('calcAmount1');
+            const amount2Input = document.getElementById('calcAmount2');
+            const currency1 = document.getElementById('calcCurrency1').textContent;
+            const currency2 = document.getElementById('calcCurrency2').textContent;
+            
+            // Get current exchange rate
+            const rate = getExchangeRate(currency1, currency2);
+            
+            if (!rate) {
+                console.warn('Exchange rate not available');
+                return;
+            }
+            
+            if (direction === 'from') {
+                // Converting from currency1 to currency2
+                const amount1 = parseFloat(amount1Input.value) || 0;
+                const amount2 = amount1 * rate;
+                amount2Input.value = amount2.toFixed(2);
+            } else {
+                // Converting from currency2 to currency1
+                const amount2 = parseFloat(amount2Input.value) || 0;
+                const amount1 = amount2 / rate;
+                amount1Input.value = amount1.toFixed(2);
+            }
+            
+            // Update rate display
+            updateCalculatorRateDisplay(currency1, currency2, rate);
+        }
+        
+        // Get exchange rate between any two currencies
+        function getExchangeRate(from, to) {
+            // First check if we have direct rate
+            if (window.exchangeRateManager) {
+                const rates = exchangeRateManager.getCurrentRates();
+                if (rates && rates[to]) {
+                    return rates[to];
+                }
+            }
+            
+            // Fallback to stored conversion rate if it matches
+            if (homeCountry && destinationCountry) {
+                const homeCurrency = getCurrencyForCountry(homeCountry.name);
+                const destCurrency = getCurrencyForCountry(destinationCountry.name);
+                
+                if (from === homeCurrency.code && to === destCurrency.code) {
+                    return conversionRate;
+                } else if (from === destCurrency.code && to === homeCurrency.code) {
+                    return 1 / conversionRate;
+                }
+            }
+            
+            // Default fallback
+            return from === to ? 1 : 0.85; // Default to approximate USD/EUR rate
+        }
+        
+        // Update rate display in calculator
+        function updateCalculatorRateDisplay(from, to, rate) {
+            const rateInfo = document.getElementById('calcRateInfo');
+            const timestamp = document.getElementById('calcLastUpdate');
+            
+            rateInfo.textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+            
+            // Show when rate was last updated
+            const now = new Date();
+            timestamp.textContent = `Updated: ${now.toLocaleTimeString()}`;
+        }
+        
+        // Copy calculation to clipboard
+        function copyCalculation() {
+            const amount1 = document.getElementById('calcAmount1').value;
+            const amount2 = document.getElementById('calcAmount2').value;
+            const currency1 = document.getElementById('calcCurrency1').textContent;
+            const currency2 = document.getElementById('calcCurrency2').textContent;
+            
+            const text = `${amount1} ${currency1} = ${amount2} ${currency2}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Show success feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+        
+        // Swap currencies in calculator
+        function swapCalculatorCurrencies() {
+            const currency1 = document.getElementById('calcCurrency1').textContent;
+            const currency2 = document.getElementById('calcCurrency2').textContent;
+            const amount1 = document.getElementById('calcAmount1').value;
+            
+            // Swap currencies
+            document.getElementById('calcCurrency1').textContent = currency2;
+            document.getElementById('calcCurrency2').textContent = currency1;
+            
+            // Keep the amount in first field and recalculate
+            document.getElementById('calcAmount1').value = amount1;
+            calculateConversion('from');
+            
+            // Animate the swap
+            const widget = document.getElementById('miniCalculator');
+            widget.style.transform = 'rotateY(360deg)';
+            setTimeout(() => {
+                widget.style.transform = '';
+            }, 300);
+        }
+        
+        // Add current calculation to comparison list
+        function addToComparison() {
+            const amount1 = document.getElementById('calcAmount1').value;
+            const amount2 = document.getElementById('calcAmount2').value;
+            const currency1 = document.getElementById('calcCurrency1').textContent;
+            const currency2 = document.getElementById('calcCurrency2').textContent;
+            
+            const comparison = {
+                id: Date.now(),
+                from: `${amount1} ${currency1}`,
+                to: `${amount2} ${currency2}`,
+                rate: getExchangeRate(currency1, currency2)
+            };
+            
+            calculatorComparisons.push(comparison);
+            
+            // Show comparisons section
+            document.getElementById('calcComparisons').style.display = 'block';
+            
+            // Update display
+            updateComparisonList();
+            
+            // Limit to 5 comparisons
+            if (calculatorComparisons.length > 5) {
+                calculatorComparisons.shift();
+            }
+        }
+        
+        // Update comparison list display
+        function updateComparisonList() {
+            const list = document.getElementById('comparisonList');
+            
+            list.innerHTML = calculatorComparisons.map(comp => `
+                <div class="comparison-item">
+                    <span>${comp.from} = ${comp.to}</span>
+                    <span class="comparison-remove" onclick="removeComparison(${comp.id})">×</span>
+                </div>
+            `).join('');
+        }
+        
+        // Remove comparison from list
+        function removeComparison(id) {
+            calculatorComparisons = calculatorComparisons.filter(c => c.id !== id);
+            updateComparisonList();
+            
+            if (calculatorComparisons.length === 0) {
+                document.getElementById('calcComparisons').style.display = 'none';
+            }
+        }
+        
+        // Toggle calculator minimize/maximize
+        function toggleCalculator() {
+            const widget = document.getElementById('miniCalculator');
+            const minimizeBtn = widget.querySelector('.calculator-minimize');
+            
+            calculatorMinimized = !calculatorMinimized;
+            
+            if (calculatorMinimized) {
+                widget.classList.add('minimized');
+                minimizeBtn.textContent = '+';
+            } else {
+                widget.classList.remove('minimized');
+                minimizeBtn.textContent = '−';
+            }
+        }
+        
+        // Make calculator draggable
+        function makeCalculatorDraggable() {
+            const widget = document.getElementById('miniCalculator');
+            const header = widget.querySelector('.calculator-header');
+            
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+            
+            header.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+            
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                
+                if (e.target === header || e.target.parentElement === header) {
+                    isDragging = true;
+                }
+            }
+            
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    widget.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+            }
+            
+            function dragEnd(e) {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+        }
+        
+        // Initialize calculator when countries are selected
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for countries to be selected
+            setTimeout(() => {
+                initializeCalculator();
+                makeCalculatorDraggable();
+            }, 1000);
+        });
+
+// Update calculator when countries change
+const originalSelectCountryByName = selectCountryByName;
+selectCountryByName = function(countryName, type, providedFeature = null) {
+    originalSelectCountryByName(countryName, type, providedFeature);
+    
+    // Update calculator currencies
+    setTimeout(() => {
+        initializeCalculator();
+    }, 500);
+};
         
         // Clear Cache function (Button)
         window.clearAllCaches = function() {
