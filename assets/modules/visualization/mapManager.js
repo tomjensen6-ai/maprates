@@ -1743,6 +1743,25 @@ export class MapManager {
     }
 }
 
+// Safari Zoom Issues
+if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    // Disable double-tap zoom on iOS
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+    
+    // Add pinch-to-zoom support for the map
+    const mapElement = document.getElementById('worldMap');
+    if (mapElement) {
+        mapElement.style.touchAction = 'pan-x pan-y pinch-zoom';
+    }
+}
+
 // Export utility functions
 export async function initializeMap() {
     const mapManager = new MapManager();
