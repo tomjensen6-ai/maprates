@@ -953,7 +953,6 @@
                 return;
             }
             
-            // ========== ADD THIS NEW SECTION - START ==========
             // Pre-populate overlays from destinations
             console.log('🎯 Pre-populating overlays from selected destinations...');
             
@@ -992,9 +991,13 @@
             console.log(`🎯 Pre-populated ${overlaysAdded} overlays from ${destinationCountries.length} destinations`);
             // ========== ADD THIS NEW SECTION - END ==========
             
-            // Rest of your existing code...
+            // ACTIVATE AND SHOW CHART CONTAINER
             const container = document.getElementById('chartContainer');
-            container.style.display = 'block';
+            if (container) {
+                container.classList.add('chart-active');
+                container.style.display = 'block';
+                console.log('📊 Chart container activated with chart-active class');
+            }
             
             // Update chart header with overlay controls
             const chartHeader = container.querySelector('.chart-header');
@@ -1157,7 +1160,18 @@
         }
 
         function hideChart() {
-            chartUIManager.hideChart();
+            // Remove chart-active class and hide container
+            const container = document.getElementById('chartContainer');
+            if (container) {
+                container.classList.remove('chart-active');
+                container.style.display = 'none';
+                console.log('📊 Chart container hidden, chart-active class removed');
+            }
+            
+            // Call the UI manager's hide method
+            if (chartUIManager) {
+                chartUIManager.hideChart();
+            }
         }
 
         // PROGRESS SYSTEM FUNCTIONS
@@ -1281,6 +1295,13 @@
             
             try {
                 showChartLoading();
+
+                // Ensure container stays visible and active during loading
+                const container = document.getElementById('chartContainer');
+                if (container && !container.classList.contains('chart-active')) {
+                    container.classList.add('chart-active');
+                    container.style.display = 'block';
+                }
                 
                 // Show which timeframe is loading
                 const progressText = document.getElementById('progressText');
