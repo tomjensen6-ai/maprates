@@ -67,10 +67,12 @@
                                 
                 <!-- DEBUG BUTTON -->
                 <button onclick="
-                    const chart = document.getElementById('chartContainer') || document.getElementById('chartSection');
-                    const canvas = document.getElementById('exchangeChart') || document.querySelector('canvas');
-                    alert('Chart Container: ' + (chart ? chart.offsetHeight + 'px, Display: ' + getComputedStyle(chart).display : 'NOT FOUND') + 
+                    const chart = document.getElementById('chartContainer');
+                    const canvas = document.getElementById('historicalChart') || document.querySelector('canvas');
+                    const hasActiveClass = chart ? chart.classList.contains('chart-active') : false;
+                    alert('Chart Container: ' + (chart ? chart.offsetHeight + 'px, Display: ' + getComputedStyle(chart).display + ', Active: ' + hasActiveClass : 'NOT FOUND') + 
                           '\nCanvas: ' + (canvas ? canvas.offsetHeight + 'px, Display: ' + getComputedStyle(canvas).display : 'NOT FOUND'));
+                "
                 " style="background: red; color: white; padding: 10px; margin: 10px;">
                     🐛 Debug Chart
                 </button>
