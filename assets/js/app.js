@@ -185,6 +185,56 @@
         
         window.destinationCountries = destinationCountries;
 
+        // Smart Chart Cache System for Instant Loading
+        class SmartChartCache {
+            constructor() {
+                this.cache = new Map();
+                this.maxSize = 50;
+                this.maxAge = 5 * 60 * 1000; // 5 minutes
+            }
+            
+            getCacheKey(from, to, days) {
+                return `${from}_${to}_${days}`;
+            }
+            
+            get(from, to, days) {
+                const key = this.getCacheKey(from, to, days);
+                const cached = this.cache.get(key);
+                
+                if (!cached) return null;
+                
+                // Check if expired
+                if (Date.now() - cached.timestamp > this.maxAge) {
+                    this.cache.delete(key);
+                    return null;
+                }
+                
+                // Move to front (LRU)
+                this.cache.delete(key);
+                this.cache.set(key, cached);
+                
+                console.log(`⚡ Cache HIT for ${days}D chart`);
+                return cached.data;
+            }
+            
+            set(from, to, days, data) {
+                const key = this.getCacheKey(from, to, days);
+                
+                // Enforce size limit
+                if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
+                    const firstKey = this.cache.keys().next().value;
+                    this.cache.delete(firstKey);
+                }
+                
+                this.cache.set(key, {
+                    data: data,
+                    timestamp: Date.now()
+                });
+                
+                console.log(`💾 Cached ${days}D chart data`);
+            }
+        }
+        
         // Initialize StateManager sync helper
         function syncWithStateManager() {
             // Subscribe to state changes to keep globals in sync during migration
@@ -240,7 +290,7 @@
         // Technical indicators now managed by technicalIndicators module
         let activeIndicators = technicalIndicators.getActiveIndicators();
         
-        // ============= AI PREDICTION SYSTEM VARIABLES =============
+        // ============= Trend PREDICTION SYSTEM VARIABLES =============
         let aiPredictionsActive = false;
         let aiPredictionData = null;
         let aiConfidenceLevel = 80; // Default 80% confidence interval
