@@ -881,6 +881,33 @@ h1:has(+ .layer-switcher-container) {
    opacity: 1 !important;
 }
 
+/* Fix horizontal scrolling */
+.container, .main-content {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Fix the currency list container */
+.currency-list-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100vw;
+}
+
+/* Fix the chart container */
+.chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure the whole page is scrollable */
+body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+
 /* Custom chart hover effects */
 #historicalChart {
     position: relative;
