@@ -1181,6 +1181,22 @@ body {
     }
 }
 
+/* Mobile chart container fix */
+@media (max-width: 768px) {
+    .chart-container, #chartContainer {
+        min-height: 400px !important;
+        height: auto !important;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+    
+    /* The actual chart canvas */
+    #exchangeChart, canvas {
+        height: 300px !important;
+        width: 100% !important;
+    }
+}
+
 /* High contrast for better readability */
 @media (prefers-contrast: high) {
    :root {
