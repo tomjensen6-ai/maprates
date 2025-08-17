@@ -484,7 +484,9 @@ class ChartManager {
                     }
                 },
                 y: {
+                    type: 'linear',
                     display: true,
+                    position: 'left',
                     grid: {
                         color: 'rgba(95, 99, 104, 0.1)',
                         drawBorder: false
@@ -493,8 +495,19 @@ class ChartManager {
                         color: '#5f6368',
                         font: { size: 12 },
                         callback: function(value) {
-                            return value.toFixed(4);
+                            // Professional precision based on value
+                            const absValue = Math.abs(value);
+                            if (absValue >= 1000) return value.toFixed(0);
+                            if (absValue >= 100) return value.toFixed(2);
+                            if (absValue >= 10) return value.toFixed(3);
+                            if (absValue >= 1) return value.toFixed(4);
+                            if (absValue >= 0.01) return value.toFixed(5);
+                            if (absValue >= 0.001) return value.toFixed(6);
+                            return value.toExponential(3); // Scientific notation for very small
                         }
+                    },
+                    title: {
+                        display: false // Will show currency in dataset label
                     }
                 }
             }
@@ -601,39 +614,93 @@ class ChartManager {
         }
     }
 
-    // Add overlay to chart
+    // Add overlay to chart - PROFESSIONAL VERSION WITH REAL RATES
     addOverlayToChart(overlayData, currency, color, homeCurrencyCode) {
-        if (!this.currentChart || !overlayData || !this.currentHistoricalData) return;
+        if (!this.currentChart || !overlayData) return;
         
-        // Get the main chart's first value for normalization
-        const mainFirstValue = this.currentHistoricalData[0].rate;
-        const overlayFirstValue = overlayData[0].rate;
+        // Determine if we need a secondary axis based on value range
+        const mainData = this.currentHistoricalData;
+        const mainRange = Math.max(...mainData.map(d => d.rate)) - Math.min(...mainData.map(d => d.rate));
+        const overlayRange = Math.max(...overlayData.map(d => d.rate)) - Math.min(...overlayData.map(d => d.rate));
+        const overlayAvg = overlayData.reduce((sum, d) => sum + d.rate, 0) / overlayData.length;
+        const mainAvg = mainData.reduce((sum, d) => sum + d.rate, 0) / mainData.length;
         
-        // Calculate normalization factor
-        const normalizationFactor = mainFirstValue / overlayFirstValue;
+        // Use secondary axis if the ranges are very different (more than 10x difference)
+        const useSecondaryAxis = (overlayAvg / mainAvg > 10) || (mainAvg / overlayAvg > 10);
+        const axisId = useSecondaryAxis ? `y${this.overlayCounter + 1}` : 'y';
         
-        // Normalize overlay data to start at the same point as main chart
-        const normalizedData = overlayData.map(item => ({
-            ...item,
-            rate: item.rate * normalizationFactor
-        }));
-        
+        // Add the overlay dataset with REAL exchange rates
         this.currentChart.data.datasets.push({
-            label: `${homeCurrencyCode} to ${currency} (normalized)`,
-            data: normalizedData.map(item => item.rate),
+            label: `${homeCurrencyCode} to ${currency}`,
+            data: overlayData.map(item => item.rate), // ACTUAL RATES - NO MANIPULATION
             borderColor: color,
             backgroundColor: 'transparent',
             borderWidth: 2,
+            borderDash: [], // Solid line for professional appearance
             fill: false,
-            tension: 0.2,
+            tension: 0.1, // Slight smoothing but maintains accuracy
             pointRadius: 0,
-            pointHoverRadius: 6,
+            pointHoverRadius: 5,
             pointBackgroundColor: color,
             pointBorderColor: '#ffffff',
             pointBorderWidth: 2,
             pointHoverBackgroundColor: color,
-            isOverlay: true // Flag for tooltip handling
+            yAxisID: axisId,
+            isOverlay: true
         });
+        
+        // Add secondary Y-axis if needed for professional multi-scale display
+        if (useSecondaryAxis) {
+            this.currentChart.options.scales[axisId] = {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false, // Don't draw grid lines for secondary axis
+                },
+                ticks: {
+                    color: color,
+                    font: { size: 11 },
+                    callback: function(value) {
+                        // Professional formatting based on currency magnitude
+                        if (value >= 1000) return value.toFixed(0);
+                        if (value >= 100) return value.toFixed(2);
+                        if (value >= 10) return value.toFixed(3);
+                        if (value >= 1) return value.toFixed(4);
+                        if (value >= 0.01) return value.toFixed(5);
+                        return value.toFixed(6);
+                    }
+                },
+                title: {
+                    display: true,
+                    text: currency,
+                    color: color,
+                    font: { size: 12, weight: '600' }
+                }
+            };
+        }
+        
+        this.overlayCounter++;
+        this.currentChart.update();
+    }
+
+    // Remove overlay and its axis if needed
+    removeOverlay(datasetIndex) {
+        if (!this.currentChart) return;
+        
+        const dataset = this.currentChart.data.datasets[datasetIndex];
+        if (!dataset) return;
+        
+        // Check if this overlay has its own axis
+        const axisId = dataset.yAxisID;
+        
+        // Remove the dataset
+        this.currentChart.data.datasets.splice(datasetIndex, 1);
+        
+        // Remove the axis if it's not the primary one
+        if (axisId && axisId !== 'y' && this.currentChart.options.scales[axisId]) {
+            delete this.currentChart.options.scales[axisId];
+        }
         
         this.currentChart.update();
     }
