@@ -22,6 +22,186 @@
     
     <!-- Main Application -->
     <script type="module" src="./assets/js/app.js"></script>
+    <style>
+    /* Mini Calculator - Floating Design */
+    .mini-calculator-widget {
+        position: fixed !important;
+        bottom: 30px !important;
+        right: 30px !important;
+        width: 280px !important;
+        background: #ffffff !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 
+                    0 8px 48px rgba(0, 0, 0, 0.08),
+                    0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+        z-index: 99999 !important;
+        display: block !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        animation: slideUp 0.3s ease-out !important;
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .calculator-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 12px 16px !important;
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+        border-radius: 12px 12px 0 0 !important;
+        cursor: move !important;
+        user-select: none !important;
+    }
+    
+    .calculator-header svg {
+        width: 16px !important;
+        height: 16px !important;
+        opacity: 0.7 !important;
+    }
+    
+    .calculator-title {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px !important;
+        flex: 1 !important;
+        margin-left: 8px !important;
+    }
+    
+    .calculator-minimize {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        line-height: 1 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .calculator-minimize:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .calculator-body {
+        padding: 16px !important;
+        background: #ffffff !important;
+        border-radius: 0 0 12px 12px !important;
+    }
+    
+    .calc-input-row {
+        display: flex !important;
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .calc-input {
+        flex: 1 !important;
+        padding: 10px 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        background: #ffffff !important;
+        color: #1a1a1a !important;
+        outline: none !important;
+        transition: border-color 0.2s !important;
+    }
+    
+    .calc-input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .calc-currency-select {
+        padding: 10px 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        background: #f8fafc !important;
+        color: #1a1a1a !important;
+        cursor: pointer !important;
+        outline: none !important;
+        min-width: 70px !important;
+    }
+    
+    .calc-currency-select:hover {
+        background: #f1f5f9 !important;
+    }
+    
+    .calc-swap-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        margin: 4px auto !important;
+        background: #f1f5f9 !important;
+        border-radius: 50% !important;
+        cursor: pointer !important;
+        font-size: 18px !important;
+        color: #64748b !important;
+        transition: all 0.2s !important;
+    }
+    
+    .calc-swap-btn:hover {
+        background: #e2e8f0 !important;
+        transform: rotate(180deg) !important;
+    }
+    
+    .calc-rate-info {
+        margin-top: 12px !important;
+        padding: 8px !important;
+        background: #f8fafc !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+        font-size: 12px !important;
+        color: #64748b !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    
+    /* Minimized State */
+    .mini-calculator-widget.minimized {
+        height: auto !important;
+    }
+    
+    .mini-calculator-widget.minimized .calculator-body {
+        display: none !important;
+    }
+    
+    /* Floating effect */
+    .mini-calculator-widget:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 
+                    0 12px 48px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 640px) {
+        .mini-calculator-widget {
+            width: calc(100% - 32px) !important;
+            left: 16px !important;
+            right: 16px !important;
+            bottom: 16px !important;
+        }
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -176,61 +356,59 @@
                 </div>
                 <div class="exchange-rate" id="rateDisplay"></div>
                 <div class="exchange-details" id="rateDetails"></div>
-                <!-- Mini Calculator Widget -->
+                
+                <!-- Mini Calculator Widget - Professional Floating Design -->
                 <div id="miniCalculator" class="mini-calculator-widget">
                     <div class="calculator-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M2 12h20M2 6h20M2 18h20M6 2v20M18 2v20"/>
+                        </svg>
                         <span class="calculator-title">Quick Convert</span>
                         <button class="calculator-minimize" onclick="toggleCalculator()">−</button>
                     </div>
                     <div class="calculator-body">
-                        <div class="calc-input-group">
+                        <div class="calc-input-row">
                             <input type="number" 
                                    id="calcAmount1" 
                                    class="calc-input" 
                                    placeholder="0.00" 
                                    value="1000"
                                    oninput="calculateConversion('from')">
-                            <span id="calcCurrency1" class="calc-currency">USD</span>
+                            <select id="calcCurrency1" class="calc-currency-select" onchange="calculateConversion('from')">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="JPY">JPY</option>
+                                <option value="CHF">CHF</option>
+                                <option value="CAD">CAD</option>
+                                <option value="AUD">AUD</option>
+                            </select>
                         </div>
                         
-                        <div class="calc-arrow">⇅</div>
+                        <div class="calc-swap-btn" onclick="swapCalculatorCurrencies()">⇅</div>
                         
-                        <div class="calc-input-group">
+                        <div class="calc-input-row">
                             <input type="number" 
                                    id="calcAmount2" 
                                    class="calc-input" 
                                    placeholder="0.00"
-                                   oninput="calculateConversion('to')">
-                            <span id="calcCurrency2" class="calc-currency">EUR</span>
+                                   readonly>
+                            <select id="calcCurrency2" class="calc-currency-select" onchange="calculateConversion('from')">
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                                <option value="GBP">GBP</option>
+                                <option value="JPY">JPY</option>
+                                <option value="CHF">CHF</option>
+                                <option value="CAD">CAD</option>
+                                <option value="AUD">AUD</option>
+                            </select>
                         </div>
                         
-                        <div class="calc-rate-display">
+                        <div class="calc-rate-info">
                             <span id="calcRateInfo">1 USD = 0.8500 EUR</span>
-                            <span id="calcLastUpdate" class="calc-timestamp">Live rate</span>
-                        </div>
-                        
-                        <div class="calc-actions">
-                            <button class="calc-btn" onclick="copyCalculation()">📋 Copy</button>
-                            <button class="calc-btn" onclick="swapCalculatorCurrencies()">🔄 Swap</button>
-                            <button class="calc-btn" onclick="addToComparison()">➕ Compare</button>
-                        </div>
-                        
-                        <!-- Comparison List (Hidden by default) -->
-                        <div id="calcComparisons" class="calc-comparisons" style="display: none;">
-                            <div class="comparison-header">Comparisons</div>
-                            <div id="comparisonList"></div>
                         </div>
                     </div>
                 </div>
-                <div class="chart-actions">
-                    <button id="showChartBtn" class="show-chart-btn" onclick="showHistoricalChart()">
-                        📈 Show Historical Chart
-                    </button>
-                    <button id="showAPIConfigBtn" class="show-chart-btn" onclick="showAPIConfig()" style="margin-left: 12px; background: var(--surface-primary); border: 2px solid var(--success-green); color: var(--success-green);">
-                        🔧 API Settings
-                    </button>
-                </div>
-            </div>
 
             <!-- Chart Container -->
             <div id="chartContainer" class="chart-container" style="display: none;">
