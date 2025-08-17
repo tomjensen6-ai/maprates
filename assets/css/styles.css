@@ -1399,3 +1399,32 @@ body {
        transition-duration: 0.01ms !important;
    }
 }
+
+/* ============================================
+   FIX FOR MISSING CHART ON IPHONE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Force chart to be visible on mobile */
+    #chartContainer, 
+    .chart-container,
+    #chartSection,
+    .chart-section {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        min-height: 300px !important;
+        overflow: visible !important;
+    }
+    
+    /* Ensure canvas is visible */
+    #exchangeChart,
+    canvas {
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important;
+        height: 300px !important;
+        min-height: 250px !important;
+        max-height: 400px !important;
+    }
+}
