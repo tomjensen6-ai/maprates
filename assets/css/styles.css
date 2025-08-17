@@ -1294,6 +1294,63 @@ body {
     }
 }
 
+/* Portrait Mode Optimization */
+@media (max-width: 768px) and (orientation: portrait) {
+    /* Make chart taller in portrait */
+    .chart-container, #chartContainer {
+        min-height: 350px !important;
+        max-height: 400px !important;
+    }
+    
+    /* Stack buttons in 2 columns for portrait */
+    .chart-controls, .time-controls {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+    
+    .indicator-controls {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+    
+    /* Bigger buttons in portrait */
+    .chart-controls button,
+    .indicator-controls button {
+        padding: 12px 8px !important;
+        font-size: 13px !important;
+        height: 44px !important; /* Apple's recommended touch target */
+    }
+    
+    /* Currency tags in a row */
+    .currency-tags {
+        display: flex !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 8px;
+        padding-bottom: 8px;
+    }
+    
+    .currency-tag {
+        flex-shrink: 0;
+        min-width: 70px;
+    }
+}
+
+/* Landscape Mode - Keep it as is since it works */
+@media (max-width: 768px) and (orientation: landscape) {
+    /* Your existing styles are good for landscape */
+    .chart-container {
+        min-height: 300px !important;
+    }
+    
+    /* 4 columns for buttons in landscape */
+    .chart-controls, .time-controls {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
 /* High contrast for better readability */
 @media (prefers-contrast: high) {
    :root {
