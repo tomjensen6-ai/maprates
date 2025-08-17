@@ -467,6 +467,38 @@ class ChartManager {
                     }
                 }
             },
+
+            // Force proper canvas sizing on mobile devices
+            forceCanvasResize() {
+                const canvas = document.getElementById('historicalChart');
+                const container = document.getElementById('chartContainer');
+                
+                if (canvas && container) {
+                    // Get container dimensions
+                    const containerRect = container.getBoundingClientRect();
+                    const containerHeight = Math.max(containerRect.height, 400);
+                    
+                    // Force explicit canvas dimensions
+                    canvas.style.width = '100%';
+                    canvas.style.height = `${containerHeight}px`;
+                    canvas.style.display = 'block';
+                    
+                    // Mobile-specific adjustments
+                    if (window.innerWidth <= 768) {
+                        canvas.style.minHeight = '350px';
+                        canvas.setAttribute('height', containerHeight);
+                        canvas.setAttribute('width', containerRect.width);
+                    }
+                    
+                    // Force Chart.js to recognize new dimensions
+                    if (this.currentChart) {
+                        requestAnimationFrame(() => {
+                            this.currentChart.resize();
+                        });
+                    }
+                }
+            }
+            
             scales: {
                 x: {
                     display: true,
@@ -500,36 +532,7 @@ class ChartManager {
         };
     }
 
-    // Force proper canvas sizing on mobile devices
-    forceCanvasResize() {
-        const canvas = document.getElementById('historicalChart');
-        const container = document.getElementById('chartContainer');
-        
-        if (canvas && container) {
-            // Get container dimensions
-            const containerRect = container.getBoundingClientRect();
-            const containerHeight = Math.max(containerRect.height, 400);
-            
-            // Force explicit canvas dimensions
-            canvas.style.width = '100%';
-            canvas.style.height = `${containerHeight}px`;
-            canvas.style.display = 'block';
-            
-            // Mobile-specific adjustments
-            if (window.innerWidth <= 768) {
-                canvas.style.minHeight = '350px';
-                canvas.setAttribute('height', containerHeight);
-                canvas.setAttribute('width', containerRect.width);
-            }
-            
-            // Force Chart.js to recognize new dimensions
-            if (this.currentChart) {
-                requestAnimationFrame(() => {
-                    this.currentChart.resize();
-                });
-            }
-        }
-    }
+    
 
     // Update chart statistics
     updateChartStats(highest, lowest, change, destCurrency) {
