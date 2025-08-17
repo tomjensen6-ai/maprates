@@ -100,8 +100,19 @@ export class MapManager {
             mapHeight = mapWidth * 0.6;
         }
         
+        // Debug - remove after testing
+        console.log('Mobile Debug:', {
+            isMobile,
+            isLandscape,
+            containerWidth,
+            mapWidth,
+            mapHeight,
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight
+        });
+        
         svg.attr("width", mapWidth).attr("height", mapHeight);
-
+        
         const width = +svg.attr("width");
         const height = +svg.attr("height");
         
