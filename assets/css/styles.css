@@ -906,7 +906,42 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
+/* new */
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    /* Make tables scrollable */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Fix currency list */
+    .currency-list {
+        font-size: 14px;
+        min-width: 300px; /* Ensures content doesn't get squished */
+    }
+    
+    /* Fix chart buttons */
+    .chart-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .chart-controls button {
+        flex: 1;
+        min-width: 60px;
+        font-size: 12px;
+    }
+    
+    /* Make the map container scrollable */
+    #map-container {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
 
+/* end new */
 
 /* Custom chart hover effects */
 #historicalChart {
