@@ -244,7 +244,7 @@ class ChartManager {
        // responsive: true,
        // maintainAspectRatio: false,  
         
-    }
+    // }
 
     // Get chart options configuration
     getChartOptions(destCurrency, days) {
