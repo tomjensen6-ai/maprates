@@ -4552,6 +4552,16 @@ currentChart.update('none');
             document.getElementById('calcAmount1').value = amount1;
             calculateConversion('from');
         }
+        
+        // Get exchange rate between any two currencies
+        function getExchangeRate(from, to) {
+            // First check if we have direct rate
+            if (window.exchangeRateManager) {
+                const rates = exchangeRateManager.getCurrentRates();
+                if (rates && rates[to]) {
+                    return rates[to];
+                }
+            }
             
             // Fallback to stored conversion rate if it matches
             if (homeCountry && destinationCountry) {
