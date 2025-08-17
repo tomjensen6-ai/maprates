@@ -1092,6 +1092,27 @@ body {
         justify-content: center;
     }
 }
+/* Fix the currency selector dropdowns */
+.currency-selector-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 0;
+}
+
+/* On mobile, stack them vertically instead */
+@media (max-width: 768px) {
+    .currency-selector-container {
+        flex-direction: column;
+        overflow-x: visible;
+    }
+    
+    .currency-selector {
+        width: 100%;
+        min-width: unset;
+    }
+}
 
 /* Focus indicators for accessibility */
 .add-destination-btn:focus,
