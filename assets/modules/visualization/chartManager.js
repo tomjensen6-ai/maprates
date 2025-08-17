@@ -231,6 +231,31 @@ class ChartManager {
                 options: this.getChartOptions(destCurrency, days)
                 
             });
+
+            // Force proper canvas sizing on mobile devices
+                forceCanvasResize() {
+                    const canvas = document.getElementById('historicalChart');
+                    const container = document.getElementById('chartContainer');
+                    
+                    if (canvas && container) {
+                        // Force canvas to match container dimensions
+                        canvas.style.height = '400px';
+                        canvas.style.width = '100%';
+                        canvas.style.display = 'block';
+                        
+                        // On mobile, ensure minimum height
+                        if (window.innerWidth <= 768) {
+                            canvas.style.minHeight = '300px';
+                            
+                            // Force Chart.js to recalculate size
+                            if (this.currentChart) {
+                                setTimeout(() => {
+                                    this.currentChart.resize();
+                                }, 100);
+                            }
+                        }
+                    }
+                }
             
             console.log('Chart created successfully!');
             console.log('Chart instances after creation:', Object.values(Chart.instances).length);
