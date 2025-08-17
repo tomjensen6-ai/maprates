@@ -1597,6 +1597,68 @@
             return await historicalDataManager.fetchRealHistoricalData(homeCurrency, destCurrency, days);
         }
 
+        // Preload all timeframes for instant switching
+        async function preloadAllTimeframes() {
+            if (!homeCountry || !destinationCountry) return;
+            
+            const homeCurrency = getCurrencyForCountry(homeCountry.name);
+            const destCurrency = getCurrencyForCountry(destinationCountry.name);
+            
+            console.log('🚀 Starting background preload of all timeframes...');
+            
+            // All timeframes to preload
+            const timeframes = [
+                { days: 7, priority: 1 },   // 1W - highest priority
+                { days: 30, priority: 2 },  // 1M
+                { days: 365, priority: 3 }, // 1Y
+                { days: 90, priority: 4 },  // 3M
+                //{ days: 180, priority: 5 }, // 6M
+                //{ days: 730, priority: 6 }, // 2Y
+                //{ days: 1825, priority: 7 } // 5Y
+            ];
+            
+            // Sort by priority
+            timeframes.sort((a, b) => a.priority - b.priority);
+            
+            // Load each timeframe with staggered timing
+            for (const { days, priority } of timeframes) {
+                setTimeout(async () => {
+                    // Check if already cached
+                    const cached = window.chartCache.get(
+                        homeCurrency.code, 
+                        destCurrency.code, 
+                        days
+                    );
+                    
+                    if (cached) {
+                        console.log(`✅ ${days}D already cached`);
+                        return;
+                    }
+                    
+                    try {
+                        // Fetch real data
+                        const data = await fetchRealHistoricalData(
+                            homeCurrency, 
+                            destCurrency, 
+                            days
+                        );
+                        
+                        // Store in cache
+                        window.chartCache.set(
+                            homeCurrency.code,
+                            destCurrency.code,
+                            days,
+                            data
+                        );
+                        
+                        console.log(`✅ Pre-cached ${days}D chart`);
+                    } catch (error) {
+                        console.warn(`Failed to pre-cache ${days}D:`, error);
+                    }
+                }, priority * 200); // Stagger by 200ms per priority level
+            }
+        }
+
         function isWeekend(date) {
             const day = date.getDay();
             return day === 0 || day === 6;
