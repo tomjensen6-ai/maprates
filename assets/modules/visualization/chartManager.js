@@ -262,7 +262,6 @@ class ChartManager {
     // }
 
     // Get chart options configuration
-    // Get chart options configuration
     getChartOptions(destCurrency, days) {
         return {
             responsive: true,
