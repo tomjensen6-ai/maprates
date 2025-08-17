@@ -83,7 +83,21 @@
         import modalManager from '../modules/ui/modalManager.js';
         import dataExportManager from '../modules/ui/dataExportManager.js';
 
+        // Debug mode flag - set to true for development, false for production
+        const DEBUG = true; // Set to false when deploying to production
         
+        // Production API configuration
+        const API_CONFIG = {
+            exchangeRateAPI: {
+                url: 'https://api.exchangerate-api.com/v4/latest/',
+                fallbackUrl: 'https://open.er-api.com/v6/latest/'
+            },
+            timeout: 10000,
+            retryAttempts: 3,
+            cacheTimeout: 300000 // 5 minutes
+        };
+        
+        console.log(`🚀 App starting in ${DEBUG ? 'DEBUG' : 'PRODUCTION'} mode`);
                
         /**
          * Application Configuration
