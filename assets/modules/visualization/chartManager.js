@@ -262,24 +262,34 @@ class ChartManager {
                 this.resizeTimeout = setTimeout(resizeHandler, 250);
             });
             
-            // iOS Safari needs special handling for orientation changes
+            // iOS Safari orientation change handler
             window.addEventListener('orientationchange', () => {
-                // Wait for orientation change to complete
-                setTimeout(() => {
-                    // Force a re-render of the chart
-                    if (this.currentChart && !this.currentChart._destroying) {
+                const container = document.getElementById('chartContainer');
+                if (!container || !container.classList.contains('chart-active')) return;
+                
+                // Store current chart data
+                const hasChart = this.currentChart !== null;
+                
+                if (hasChart) {
+                    // Lock the container height during transition
+                    container.style.minHeight = container.offsetHeight + 'px';
+                    
+                    // Wait for orientation animation to complete
+                    setTimeout(() => {
+                        // Unlock height
+                        container.style.minHeight = '';
+                        
+                        // Force resize
+                        this.forceCanvasResize();
+                        
+                        // Ensure chart is visible
                         const canvas = document.getElementById('historicalChart');
                         if (canvas) {
-                            // Temporarily hide and show to force Safari to recalculate
-                            canvas.style.display = 'none';
-                            canvas.offsetHeight; // Force reflow
-                            canvas.style.display = 'block';
-                            
-                            // Now resize
-                            this.forceCanvasResize();
+                            canvas.style.opacity = '1';
+                            canvas.style.visibility = 'visible';
                         }
-                    }
-                }, 500); // iOS needs more time for orientation animation
+                    }, 600);
+                }
             });
             
         }, 100);
