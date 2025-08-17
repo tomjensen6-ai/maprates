@@ -236,6 +236,14 @@ class ChartManager {
             
             // Add reset zoom button
             this.addResetZoomButton();
+            // Force canvas resize on mobile
+            this.forceCanvasResize();
+            
+            // Listen for orientation changes
+            window.addEventListener('resize', () => this.forceCanvasResize());
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => this.forceCanvasResize(), 300);
+            });
             
         }, 100);
     }
