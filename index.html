@@ -176,7 +176,52 @@
                 </div>
                 <div class="exchange-rate" id="rateDisplay"></div>
                 <div class="exchange-details" id="rateDetails"></div>
-                
+                <!-- Mini Calculator Widget -->
+                <div id="miniCalculator" class="mini-calculator-widget">
+                    <div class="calculator-header">
+                        <span class="calculator-title">Quick Convert</span>
+                        <button class="calculator-minimize" onclick="toggleCalculator()">−</button>
+                    </div>
+                    <div class="calculator-body">
+                        <div class="calc-input-group">
+                            <input type="number" 
+                                   id="calcAmount1" 
+                                   class="calc-input" 
+                                   placeholder="0.00" 
+                                   value="1000"
+                                   oninput="calculateConversion('from')">
+                            <span id="calcCurrency1" class="calc-currency">USD</span>
+                        </div>
+                        
+                        <div class="calc-arrow">⇅</div>
+                        
+                        <div class="calc-input-group">
+                            <input type="number" 
+                                   id="calcAmount2" 
+                                   class="calc-input" 
+                                   placeholder="0.00"
+                                   oninput="calculateConversion('to')">
+                            <span id="calcCurrency2" class="calc-currency">EUR</span>
+                        </div>
+                        
+                        <div class="calc-rate-display">
+                            <span id="calcRateInfo">1 USD = 0.8500 EUR</span>
+                            <span id="calcLastUpdate" class="calc-timestamp">Live rate</span>
+                        </div>
+                        
+                        <div class="calc-actions">
+                            <button class="calc-btn" onclick="copyCalculation()">📋 Copy</button>
+                            <button class="calc-btn" onclick="swapCalculatorCurrencies()">🔄 Swap</button>
+                            <button class="calc-btn" onclick="addToComparison()">➕ Compare</button>
+                        </div>
+                        
+                        <!-- Comparison List (Hidden by default) -->
+                        <div id="calcComparisons" class="calc-comparisons" style="display: none;">
+                            <div class="comparison-header">Comparisons</div>
+                            <div id="comparisonList"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="chart-actions">
                     <button id="showChartBtn" class="show-chart-btn" onclick="showHistoricalChart()">
                         📈 Show Historical Chart
