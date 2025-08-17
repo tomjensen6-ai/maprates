@@ -1421,6 +1421,210 @@ body {
    }
 }
 
+/* Mini Calculator Widget - Professional Design */
+.mini-calculator-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.mini-calculator-widget.minimized {
+    height: 45px;
+    width: 200px;
+}
+
+.calculator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    color: white;
+    font-weight: 600;
+    cursor: move;
+}
+
+.calculator-title {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.calculator-minimize {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.calculator-minimize:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.calculator-body {
+    padding: 20px;
+    background: white;
+    border-radius: 0 0 16px 16px;
+}
+
+.minimized .calculator-body {
+    display: none;
+}
+
+.calc-input-group {
+    position: relative;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 4px;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.calc-input-group:focus-within {
+    border-color: #667eea;
+}
+
+.calc-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    font-weight: 300;
+    padding: 12px;
+    outline: none;
+    color: #2d3748;
+}
+
+.calc-input::placeholder {
+    color: #cbd5e0;
+}
+
+.calc-currency {
+    padding: 0 16px;
+    font-weight: 600;
+    color: #667eea;
+    font-size: 18px;
+}
+
+.calc-arrow {
+    text-align: center;
+    font-size: 20px;
+    color: #cbd5e0;
+    margin: 8px 0;
+}
+
+.calc-rate-display {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+#calcRateInfo {
+    display: block;
+    font-size: 14px;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.calc-timestamp {
+    display: block;
+    font-size: 11px;
+    color: #a0aec0;
+    margin-top: 4px;
+}
+
+.calc-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.calc-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.calc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.calc-btn:active {
+    transform: translateY(0);
+}
+
+/* Comparison List */
+.calc-comparisons {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.comparison-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #f7fafc;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.comparison-remove {
+    color: #e53e3e;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Make it draggable on desktop */
+@media (min-width: 768px) {
+    .mini-calculator-widget {
+        cursor: move;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 767px) {
+    .mini-calculator-widget {
+        width: calc(100% - 20px);
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+}
+
 /* ============================================
    CHART VISIBILITY CONTROL
    ============================================ */
