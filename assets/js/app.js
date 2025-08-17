@@ -104,9 +104,7 @@
             }
         };
 
-        // Set debug mode based on environment
-        DEBUG.enabled = APP_CONFIG.environment === 'development';
-
+        
         // ============================================================================
         // GLOBAL MANAGERS
         // ============================================================================
