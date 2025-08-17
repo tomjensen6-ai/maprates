@@ -1114,6 +1114,27 @@ body {
     }
 }
 
+/* Make map bigger on mobile */
+@media (max-width: 768px) {
+    #worldMap, .map-container {
+        height: 60vh !important; /* Takes 60% of screen height */
+        min-height: 400px;
+        width: 100%;
+    }
+    
+    /* Make the destination button smaller/repositioned */
+    .add-destination-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+    
+    /* Better spacing */
+    .map-section {
+        padding: 10px;
+    }
+}
+
 /* Focus indicators for accessibility */
 .add-destination-btn:focus,
 .reset-destinations-btn:focus,
