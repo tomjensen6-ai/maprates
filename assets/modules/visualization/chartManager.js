@@ -494,43 +494,52 @@ class ChartManager {
     forceCanvasResize() {
         const canvas = document.getElementById('historicalChart');
         const container = document.getElementById('chartContainer');
+        const wrapper = document.querySelector('.chart-wrapper');
         
-        if (canvas && container && this.currentChart) {
-            // Prevent resize during chart destruction
-            if (this.currentChart._destroying) return;
+        if (!canvas || !container || !this.currentChart) return;
+        
+        // Store chart visibility state
+        const isChartActive = container.classList.contains('chart-active');
+        if (!isChartActive) return; // Don't resize if chart isn't active
+        
+        // Use requestAnimationFrame for smooth resizing
+        requestAnimationFrame(() => {
+            // Get current orientation
+            const isPortrait = window.innerHeight > window.innerWidth;
             
-            // Get fresh container dimensions after orientation change
-            setTimeout(() => {
-                const containerRect = container.getBoundingClientRect();
-                const isPortrait = window.innerHeight > window.innerWidth;
-                
-                // Set different heights for portrait vs landscape
-                const targetHeight = isPortrait 
-                    ? Math.min(window.innerHeight * 0.5, 450)  // Portrait: 50% of viewport, max 450px
-                    : Math.min(window.innerHeight * 0.7, 350); // Landscape: 70% of viewport, max 350px
-                
-                // Force canvas to specific dimensions
-                canvas.style.width = '100%';
-                canvas.style.height = `${targetHeight}px`;
-                canvas.style.display = 'block';
-                canvas.style.visibility = 'visible';
-                
-                // Set canvas internal dimensions for sharp rendering
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = containerRect.width * dpr;
-                canvas.height = targetHeight * dpr;
-                
-                // Scale canvas back down using CSS
-                canvas.style.width = `${containerRect.width}px`;
-                canvas.style.height = `${targetHeight}px`;
-                
-                // Force Chart.js to update with new dimensions
-                if (this.currentChart && !this.currentChart._destroying) {
-                    this.currentChart.resize();
-                    this.currentChart.update('none'); // Update without animation
-                }
-            }, 100); // Small delay to ensure DOM has updated after orientation change
-        }
+            // Calculate appropriate dimensions
+            const containerWidth = container.offsetWidth;
+            const targetHeight = isPortrait ? 400 : 350;
+            
+            // Set wrapper height first
+            if (wrapper) {
+                wrapper.style.height = `${targetHeight}px`;
+                wrapper.style.minHeight = `${targetHeight}px`;
+            }
+            
+            // Force canvas element dimensions
+            canvas.style.width = '100%';
+            canvas.style.height = `${targetHeight}px`;
+            canvas.style.minHeight = `${targetHeight}px`;
+            canvas.style.display = 'block';
+            canvas.style.visibility = 'visible';
+            canvas.style.position = 'relative';
+            
+            // Set actual canvas resolution for crisp rendering
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = containerWidth * dpr;
+            canvas.height = targetHeight * dpr;
+            
+            // Scale back via CSS
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = targetHeight + 'px';
+            
+            // Force Chart.js to recognize new size
+            if (this.currentChart) {
+                this.currentChart.resize();
+                this.currentChart.render();
+            }
+        });
     }
     
 
@@ -584,21 +593,36 @@ class ChartManager {
 
     // Add overlay to chart
     addOverlayToChart(overlayData, currency, color, homeCurrencyCode) {
-        if (!this.currentChart || !overlayData) return;
+        if (!this.currentChart || !overlayData || !this.currentHistoricalData) return;
+        
+        // Get the main chart's first value for normalization
+        const mainFirstValue = this.currentHistoricalData[0].rate;
+        const overlayFirstValue = overlayData[0].rate;
+        
+        // Calculate normalization factor
+        const normalizationFactor = mainFirstValue / overlayFirstValue;
+        
+        // Normalize overlay data to start at the same point as main chart
+        const normalizedData = overlayData.map(item => ({
+            ...item,
+            rate: item.rate * normalizationFactor
+        }));
         
         this.currentChart.data.datasets.push({
-            label: `${homeCurrencyCode} to ${currency}`,
-            data: overlayData.map(item => item.rate),
+            label: `${homeCurrencyCode} to ${currency} (normalized)`,
+            data: normalizedData.map(item => item.rate),
             borderColor: color,
-            backgroundColor: color + '33',
-            borderWidth: 3,
+            backgroundColor: 'transparent',
+            borderWidth: 2,
             fill: false,
-            tension: 0.3,
+            tension: 0.2,
             pointRadius: 0,
             pointHoverRadius: 6,
             pointBackgroundColor: color,
             pointBorderColor: '#ffffff',
-            pointBorderWidth: 2
+            pointBorderWidth: 2,
+            pointHoverBackgroundColor: color,
+            isOverlay: true // Flag for tooltip handling
         });
         
         this.currentChart.update();
