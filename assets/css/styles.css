@@ -1197,6 +1197,58 @@ body {
     }
 }
 
+@media (max-width: 768px) {
+    /* Time period buttons (7D, 1M, 3M, 1Y) */
+    .chart-controls, .time-controls {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    
+    /*Button Layout */
+    /* Indicator buttons (SMA, Bollinger, RSI, etc) */
+    .indicator-controls {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    
+    /* All chart buttons */
+    .chart-controls button,
+    .time-controls button,
+    .indicator-controls button {
+        padding: 8px 5px !important;
+        font-size: 12px !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+    
+    /* Currency tags (USD, LYD, AUD) */
+    .currency-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    
+    .currency-tag {
+        padding: 5px 10px;
+        font-size: 12px;
+        flex: 1;
+        min-width: 60px;
+        text-align: center;
+    }
+    
+    /* Manage Overlay button */
+    .manage-overlay-btn {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
+    }
+}
+
 /* High contrast for better readability */
 @media (prefers-contrast: high) {
    :root {
