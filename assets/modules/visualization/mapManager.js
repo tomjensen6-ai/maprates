@@ -77,9 +77,29 @@ export class MapManager {
         // Make map responsive and centered
         const container = svg.node().parentElement;
         const containerWidth = container.clientWidth - 48; // Account for padding
-        const mapWidth = Math.min(containerWidth, 1000);   // Max width 1000px
-        const mapHeight = mapWidth * 0.6;                  // Maintain aspect ratio
-
+        
+        // Mobile detection
+        const isMobile = window.innerWidth <= 900;
+        const isLandscape = window.innerWidth > window.innerHeight;
+        
+        let mapWidth, mapHeight;
+        
+        if (isMobile) {
+            if (isLandscape) {
+                // Landscape mode - use most of viewport
+                mapWidth = Math.min(containerWidth, window.innerWidth * 0.9);
+                mapHeight = window.innerHeight * 0.7; // 70% of viewport height
+            } else {
+                // Portrait mode - full width, reasonable height
+                mapWidth = containerWidth;
+                mapHeight = Math.min(window.innerHeight * 0.5, 400); // 50% of viewport or 400px max
+            }
+        } else {
+            // Desktop - original behavior
+            mapWidth = Math.min(containerWidth, 1000);
+            mapHeight = mapWidth * 0.6;
+        }
+        
         svg.attr("width", mapWidth).attr("height", mapHeight);
 
         const width = +svg.attr("width");
