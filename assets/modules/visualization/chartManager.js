@@ -239,6 +239,12 @@ class ChartManager {
             
         }, 100);
     }
+    // chart not go in 0px
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,  
+        
+    }
 
     // Get chart options configuration
     getChartOptions(destCurrency, days) {
