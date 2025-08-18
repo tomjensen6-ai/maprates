@@ -1659,3 +1659,40 @@ body {
         max-height: 400px !important;
     }
 }
+
+/* Force chart visibility */
+#chartContainer.chart-active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 400px;
+}
+
+.chart-wrapper {
+    display: block !important;
+    min-height: 300px;
+    position: relative;
+}
+
+#historicalChart {
+    display: block !important;
+    visibility: visible !important;
+    max-width: 100%;
+    height: auto;
+    min-height: 300px;
+}
+
+/* Mobile-specific fixes */
+@media only screen and (max-width: 768px) {
+    #chartContainer {
+        padding: 10px;
+    }
+    
+    .chart-wrapper {
+        min-height: 250px;
+    }
+    
+    #historicalChart {
+        min-height: 250px;
+    }
+}
