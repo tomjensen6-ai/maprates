@@ -1042,80 +1042,245 @@
          */
 
         async function showHistoricalChart() {
-            // Check if user can access historical charts
-            if (!premiumFeaturesManager.canAccessFeature('historicalCharts')) {
-                premiumFeaturesManager.showPremiumModal('Historical Charts');
-                return;
-            }
-            
-            if (!countrySelectionManager.getHomeCountry() || !countrySelectionManager.getDestinationCountry()) {
-                alert('Please select both home and destination countries first');
-                return;
-            }
-            
-            // Pre-populate overlays from destinations
-            console.log('🎯 Pre-populating overlays from selected destinations...');
-            
-            // Clear existing overlays first
-            activeOverlays = [];
-            overlayCounter = 0;
-            
-            // Get the main destination for comparison
-            const mainDestination = countrySelectionManager.getDestinationCountry();
-            
-            // Add overlays for each destination (except the main one)
-            let overlaysAdded = 0;
-            destinationCountries.forEach((dest, index) => {
-                // Skip the main destination (already shown as primary line)
-                if (dest.name !== mainDestination.name && overlaysAdded < 3) {
-                    const currency = getCurrencyForCountry(dest.name);
-                    if (currency) {
-                        const color = overlayColors[overlayCounter % overlayColors.length];
-                        overlayCounter++;
-                        
-                        activeOverlays.push({
-                            currency: currency.code,
-                            country: dest.name,
-                            color: color,
-                            visible: true, // Start as visible
-                            data: null,
-                            isFromDestinations: true
-                        });
-                        
-                        overlaysAdded++;
-                        console.log(`✅ Added overlay for ${dest.name} (${currency.code})`);
-                    }
+        console.log('🎯 showHistoricalChart called');
+        
+        // Check if user can access historical charts
+        if (!premiumFeaturesManager.canAccessFeature('historicalCharts')) {
+            premiumFeaturesManager.showPremiumModal('Historical Charts');
+            return;
+        }
+        
+        if (!countrySelectionManager.getHomeCountry() || !countrySelectionManager.getDestinationCountry()) {
+            alert('Please select both home and destination countries first');
+            return;
+        }
+        
+        // FIRST - Get the container and check it exists
+        const container = document.getElementById('chartContainer');
+        if (!container) {
+            console.error('❌ Chart container not found in DOM');
+            return;
+        }
+        
+        // Pre-populate overlays from destinations
+        console.log('🎯 Pre-populating overlays from selected destinations...');
+        
+        // Clear existing overlays first
+        activeOverlays = [];
+        overlayCounter = 0;
+        
+        // Get the main destination for comparison
+        const mainDestination = countrySelectionManager.getDestinationCountry();
+        
+        // Add overlays for each destination (except the main one)
+        let overlaysAdded = 0;
+        const destinationCountries = countrySelectionManager.getDestinationCountries ? 
+            countrySelectionManager.getDestinationCountries() : [mainDestination];
+        
+        destinationCountries.forEach((dest, index) => {
+            // Skip the main destination (already shown as primary line)
+            if (dest.name !== mainDestination.name && overlaysAdded < 3) {
+                const currency = getCurrencyForCountry(dest.name);
+                if (currency) {
+                    const overlayColors = ['#EA4335', '#FBBC04', '#34A853', '#4285F4']; // Google colors
+                    const color = overlayColors[overlayCounter % overlayColors.length];
+                    overlayCounter++;
+                    
+                    activeOverlays.push({
+                        currency: currency.code,
+                        country: dest.name,
+                        color: color,
+                        visible: true,
+                        data: null,
+                        isFromDestinations: true
+                    });
+                    
+                    overlaysAdded++;
+                    console.log(`✅ Added overlay for ${dest.name} (${currency.code})`);
                 }
+            }
+        });
+        
+        console.log(`🎯 Pre-populated ${overlaysAdded} overlays from ${destinationCountries.length} destinations`);
+        
+        // ACTIVATE AND SHOW CHART CONTAINER
+        // Remove any conflicting inline styles first
+        container.style.removeProperty('display');
+        
+        // Force display with important
+        container.classList.add('chart-active');
+        container.style.display = 'block';
+        container.style.visibility = 'visible';
+        container.style.opacity = '1';
+        container.style.minHeight = '400px';
+        
+        // Ensure wrapper is visible
+        const wrapper = container.querySelector('.chart-wrapper');
+        if (wrapper) {
+            wrapper.style.display = 'block';
+            wrapper.style.minHeight = '300px';
+        }
+        
+        console.log('📊 Chart container activated:', {
+            display: getComputedStyle(container).display,
+            visibility: getComputedStyle(container).visibility,
+            height: container.offsetHeight,
+            hasClass: container.classList.contains('chart-active')
+        });
+        
+        // Update chart header with overlay controls
+        const chartHeader = container.querySelector('.chart-header');
+        if (chartHeader) {
+            chartHeader.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <!-- Header Row with Title and Close/Export buttons -->
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px;">
+                        <div>
+                            <h3 style="margin: 0 0 4px 0; font-size: 1.25rem; font-weight: 600; color: #202124;">
+                                📈 Historical Exchange Rate
+                            </h3>
+                            <p style="
+                                margin: 0;
+                                font-size: 0.8rem;
+                                color: #5f6368;
+                                font-weight: 400;
+                            ">Historical data for educational purposes only • Not investment advice</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button onclick="exportChart()" style="
+                                background: white;
+                                color: #5f6368;
+                                border: 1px solid #dadce0;
+                                border-radius: 6px;
+                                padding: 8px 14px;
+                                font-size: 0.875rem;
+                                font-weight: 500;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                transition: all 0.2s;
+                                height: 36px;
+                            "
+                            onmouseover="this.style.background='#f8f9fa'"
+                            onmouseout="this.style.background='white'">
+                                📥 Export
+                            </button>
+                            <button class="close-chart-btn" onclick="hideChart()" style="
+                                width: 36px;
+                                height: 36px;
+                                border-radius: 6px;
+                                border: 1px solid #dadce0;
+                                background: white;
+                                color: #5f6368;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                font-size: 1.25rem;
+                                transition: all 0.2s;
+                            "
+                            onmouseover="this.style.background='#f8f9fa'"
+                            onmouseout="this.style.background='white'">✕</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls Row -->
+                    <div class="chart-controls" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                        padding-top: 12px;
+                        border-top: 1px solid #e8eaed;
+                    ">
+                        <!-- Time Period Buttons -->
+                        <div class="timeframe-buttons" style="display: flex; gap: 4px;">
+                            <button class="timeframe-btn active" data-period="7">7D</button>
+                            <button class="timeframe-btn" data-period="30">1M</button>
+                            <button class="timeframe-btn" data-period="90">3M</button>
+                            <button class="timeframe-btn" data-period="365">1Y</button>
+                        </div>
+                        
+                        ${premiumFeaturesManager.isPremium() ? `
+                            <!-- Divider -->
+                            <div style="width: 1px; height: 24px; background: #e8eaed;"></div>
+                            
+                            <!-- Technical Indicators -->
+                            <div class="indicator-controls" style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="toggleIndicator('sma')" class="indicator-btn" data-indicator="sma">📈 SMA</button>
+                                <button onclick="toggleIndicator('bollinger')" class="indicator-btn" data-indicator="bollinger">📊 Bollinger</button>
+                                <button onclick="toggleIndicator('rsi')" class="indicator-btn" data-indicator="rsi">⚡ RSI</button>
+                                <button onclick="toggleAIPredictions()" class="indicator-btn" data-indicator="trend" style="
+                                    background: linear-gradient(45deg, #4285f4, #34a853); 
+                                    color: white; 
+                                    border: none; 
+                                    font-weight: 600;
+                                ">📈 Trend Analysis</button>
+                            </div>
+    
+                            <!-- Divider before overlay currencies -->
+                            <div style="width: 1px; height: 20px; background: #e0e0e0; margin: 0 8px;"></div>
+    
+                            <!-- Overlay currencies will be inserted here by updateOverlayControls() -->
+    
+                            <!-- Divider before Manage button -->
+                            <div style="width: 1px; height: 20px; background: #e0e0e0; margin: 0 8px;"></div>
+    
+                            <!-- Manage Overlays Button (pushed to the right) -->
+                            <div style="margin-left: auto;">
+                                <button onclick="showDestinationOverlayPanel()" style="
+                                    background: #34a853;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 6px;
+                                    padding: 8px 14px;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    cursor: pointer;
+                                    transition: all 0.2s;
+                                "
+                                onmouseover="this.style.background='#2e7d32'"
+                                onmouseout="this.style.background='#34a853'">
+                                    🎯 Manage Overlays
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Call updateOverlayControls after setting the header HTML
+            if (typeof updateOverlayControls === 'function') {
+                setTimeout(() => {
+                    updateOverlayControls();
+                }, 100);
+            }
+        }
+        
+        // Now load and display the actual chart
+        try {
+            // Load historical data
+            const homeCountry = countrySelectionManager.getHomeCountry();
+            const destCountry = countrySelectionManager.getDestinationCountry();
+            
+            console.log('📊 Loading historical data for:', {
+                from: homeCountry.currency,
+                to: destCountry.currency
             });
             
-            console.log(`🎯 Pre-populated ${overlaysAdded} overlays from ${destinationCountries.length} destinations`);
-            // ========== ADD THIS NEW SECTION - END ==========
+            // Call your chart creation function here
+            if (typeof chartManager !== 'undefined' && chartManager.createHistoricalChart) {
+                await chartManager.createHistoricalChart(homeCountry.currency, destCountry.currency);
+            } else if (typeof createHistoricalChart === 'function') {
+                await createHistoricalChart(homeCountry.currency, destCountry.currency);
+            } else {
+                console.error('❌ Chart creation function not found');
+            }
             
-            // ACTIVATE AND SHOW CHART CONTAINER
-            const container = document.getElementById('chartContainer');
-            if (container) {
-                // Remove any conflicting inline styles first
-                container.style.removeProperty('display');
-                
-                // Force display with important using setAttribute
-                container.classList.add('chart-active');
-                container.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 400px !important;');
-                
-                // Ensure wrapper is visible
-                const wrapper = container.querySelector('.chart-wrapper');
-                if (wrapper) {
-                    wrapper.style.display = 'block';
-                    wrapper.style.minHeight = '300px';
-                }
-                
-                console.log('📊 Chart container activated:', {
-                    display: getComputedStyle(container).display,
-                    visibility: getComputedStyle(container).visibility,
-                    height: container.offsetHeight,
-                    hasClass: container.classList.contains('chart-active')
-                });
-            }
-            }
+        } catch (error) {
+            console.error('❌ Error loading chart:', error);
+        }
+    }
             
             // Update chart header with overlay controls
             const chartHeader = container.querySelector('.chart-header');
