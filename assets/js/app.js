@@ -107,6 +107,31 @@
         const isProduction = false; // Set to true when deploying
         
         console.log(`🚀 App starting in ${DEBUG ? 'DEBUG' : 'PRODUCTION'} mode`);
+
+        // Professional Device Detection System
+        const DeviceManager = {
+            isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+            isIPhone: /iPhone|iPod/i.test(navigator.userAgent),
+            isIPad: /iPad/i.test(navigator.userAgent),
+            isTablet: /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent),
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight,
+            pixelRatio: window.devicePixelRatio || 1,
+            isSmallScreen: window.innerWidth < 768,
+            isTouchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+            
+            // Professional viewport detection
+            getViewportSize() {
+                return {
+                    width: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0),
+                    height: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+                };
+            }
+        };
+        
+        // Store globally for other modules
+        window.DeviceManager = DeviceManager;
+        console.log('📱 Device Detection:', DeviceManager);
                
         /**
          * Application Configuration
@@ -4731,13 +4756,261 @@ currentChart.update('none');
             }
         }
         
-        // Initialize calculator when countries are selected
+        // Professional Mobile-Optimized Calculator System
+        class ProfessionalCalculator {
+            constructor() {
+                this.isInitialized = false;
+                this.currentMode = null;
+                this.exchangeRates = new Map();
+                this.lastUpdate = null;
+            }
+            
+            init() {
+                if (this.isInitialized) return;
+                
+                // Determine display mode based on device
+                if (window.DeviceManager.isMobile || window.DeviceManager.screenWidth < 768) {
+                    this.initMobileCalculator();
+                    this.currentMode = 'mobile';
+                } else if (window.DeviceManager.isTablet) {
+                    this.initTabletCalculator();
+                    this.currentMode = 'tablet';
+                } else {
+                    this.initDesktopCalculator();
+                    this.currentMode = 'desktop';
+                }
+                
+                this.isInitialized = true;
+                console.log(`💱 Calculator initialized in ${this.currentMode} mode`);
+            }
+            
+            initMobileCalculator() {
+                // Remove any existing desktop calculator
+                const existingCalc = document.getElementById('miniCalculator');
+                if (existingCalc) {
+                    existingCalc.style.display = 'none';
+                }
+                
+                // Create mobile-optimized bottom sheet calculator
+                this.createMobileBottomSheet();
+            }
+            
+            createMobileBottomSheet() {
+                // Create toggle button (small, unobtrusive)
+                const toggleBtn = document.createElement('div');
+                toggleBtn.id = 'mobileCalcToggle';
+                toggleBtn.className = 'mobile-calc-toggle';
+                toggleBtn.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1.81.45 1.61 1.67 1.61 1.16 0 1.6-.64 1.6-1.39 0-.93-.53-1.28-2.05-1.84-1.86-.68-3.15-1.55-3.15-3.39 0-1.65 1.16-2.95 2.99-3.3V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.63-1.63-1.63-1.01 0-1.46.58-1.46 1.28 0 .64.45 1.02 1.8 1.47 1.96.68 3.28 1.46 3.28 3.56 0 1.74-1.09 3.04-2.88 3.37z"/>
+                    </svg>
+                `;
+                
+                // Create bottom sheet panel
+                const bottomSheet = document.createElement('div');
+                bottomSheet.id = 'mobileCalcSheet';
+                bottomSheet.className = 'mobile-calc-sheet';
+                bottomSheet.innerHTML = `
+                    <div class="sheet-handle"></div>
+                    <div class="sheet-header">
+                        <h3>Quick Convert</h3>
+                        <button class="sheet-close">×</button>
+                    </div>
+                    <div class="sheet-content">
+                        <div class="calc-row">
+                            <input type="number" id="mobileCalcFrom" class="calc-input" placeholder="0.00" inputmode="decimal">
+                            <select id="mobileFromCurrency" class="calc-select">
+                                ${this.generateCurrencyOptions()}
+                            </select>
+                        </div>
+                        <button class="calc-swap-btn" aria-label="Swap currencies">⇄</button>
+                        <div class="calc-row">
+                            <input type="number" id="mobileCalcTo" class="calc-input" placeholder="0.00" inputmode="decimal" readonly>
+                            <select id="mobileToCurrency" class="calc-select">
+                                ${this.generateCurrencyOptions()}
+                            </select>
+                        </div>
+                        <div class="rate-info">
+                            <span id="mobileRateDisplay">Select currencies</span>
+                            <span id="mobileLastUpdate"></span>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to DOM
+                document.body.appendChild(toggleBtn);
+                document.body.appendChild(bottomSheet);
+                
+                // Setup event handlers
+                this.setupMobileEventHandlers();
+            }
+            
+            generateCurrencyOptions() {
+                // Use real currency data
+                const majorCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'CNY'];
+                
+                // Add current selected currencies first if available
+                if (window.homeCountry) {
+                    const homeCurrency = getCurrencyForCountry(window.homeCountry.name);
+                    if (homeCurrency && !majorCurrencies.includes(homeCurrency.code)) {
+                        majorCurrencies.unshift(homeCurrency.code);
+                    }
+                }
+                
+                if (window.destinationCountry) {
+                    const destCurrency = getCurrencyForCountry(window.destinationCountry.name);
+                    if (destCurrency && !majorCurrencies.includes(destCurrency.code)) {
+                        majorCurrencies.splice(1, 0, destCurrency.code);
+                    }
+                }
+                
+                return majorCurrencies.map(code => 
+                    `<option value="${code}">${code}</option>`
+                ).join('');
+            }
+            
+            setupMobileEventHandlers() {
+                const toggleBtn = document.getElementById('mobileCalcToggle');
+                const sheet = document.getElementById('mobileCalcSheet');
+                const closeBtn = sheet.querySelector('.sheet-close');
+                const swapBtn = sheet.querySelector('.calc-swap-btn');
+                const fromInput = document.getElementById('mobileCalcFrom');
+                const fromSelect = document.getElementById('mobileFromCurrency');
+                const toSelect = document.getElementById('mobileToCurrency');
+                
+                // Toggle sheet
+                toggleBtn.addEventListener('click', () => {
+                    sheet.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    this.performCalculation();
+                });
+                
+                // Close sheet
+                closeBtn.addEventListener('click', () => {
+                    sheet.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                // Swipe down to close
+                let startY = 0;
+                const handle = sheet.querySelector('.sheet-handle');
+                
+                handle.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                });
+                
+                handle.addEventListener('touchmove', (e) => {
+                    const currentY = e.touches[0].clientY;
+                    const diff = currentY - startY;
+                    
+                    if (diff > 0) {
+                        sheet.style.transform = `translateY(${diff}px)`;
+                    }
+                });
+                
+                handle.addEventListener('touchend', (e) => {
+                    const currentY = e.changedTouches[0].clientY;
+                    const diff = currentY - startY;
+                    
+                    if (diff > 100) {
+                        sheet.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                    sheet.style.transform = '';
+                });
+                
+                // Swap currencies
+                swapBtn.addEventListener('click', () => {
+                    const temp = fromSelect.value;
+                    fromSelect.value = toSelect.value;
+                    toSelect.value = temp;
+                    this.performCalculation();
+                });
+                
+                // Calculate on input
+                fromInput.addEventListener('input', () => this.performCalculation());
+                fromSelect.addEventListener('change', () => this.performCalculation());
+                toSelect.addEventListener('change', () => this.performCalculation());
+            }
+            
+            async performCalculation() {
+                const amount = parseFloat(document.getElementById('mobileCalcFrom').value) || 0;
+                const fromCurrency = document.getElementById('mobileFromCurrency').value;
+                const toCurrency = document.getElementById('mobileToCurrency').value;
+                const toInput = document.getElementById('mobileCalcTo');
+                const rateDisplay = document.getElementById('mobileRateDisplay');
+                const updateDisplay = document.getElementById('mobileLastUpdate');
+                
+                if (amount === 0) {
+                    toInput.value = '0.00';
+                    return;
+                }
+                
+                // Get real exchange rate
+                let rate = await this.getRealExchangeRate(fromCurrency, toCurrency);
+                
+                if (rate) {
+                    const result = (amount * rate).toFixed(2);
+                    toInput.value = result;
+                    rateDisplay.textContent = `1 ${fromCurrency} = ${rate.toFixed(6)} ${toCurrency}`;
+                    updateDisplay.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+                } else {
+                    toInput.value = 'No rate available';
+                    rateDisplay.textContent = 'Rate unavailable';
+                }
+            }
+            
+            async getRealExchangeRate(from, to) {
+                // Use real exchange rate manager
+                if (window.exchangeRateManager) {
+                    const rates = exchangeRateManager.getCurrentRates();
+                    if (rates && rates[to]) {
+                        return rates[to];
+                    }
+                    
+                    // Fetch if not cached
+                    try {
+                        const homeCurrency = { code: from };
+                        await exchangeRateManager.fetchExchangeRates(homeCurrency);
+                        const newRates = exchangeRateManager.getCurrentRates();
+                        return newRates?.[to] || null;
+                    } catch (error) {
+                        console.error('Failed to fetch rate:', error);
+                        return null;
+                    }
+                }
+                
+                return null;
+            }
+            
+            initDesktopCalculator() {
+                // Keep existing desktop calculator
+                const calc = document.getElementById('miniCalculator');
+                if (calc) {
+                    calc.style.display = 'block';
+                    makeCalculatorDraggable();
+                }
+            }
+            
+            initTabletCalculator() {
+                // Tablet uses desktop calculator but positioned differently
+                this.initDesktopCalculator();
+                const calc = document.getElementById('miniCalculator');
+                if (calc) {
+                    calc.style.right = '20px';
+                    calc.style.bottom = '100px';
+                }
+            }
+        }
+        
+        // Initialize professional calculator
+        window.professionalCalculator = new ProfessionalCalculator();
+        
+        // Initialize when DOM ready
         document.addEventListener('DOMContentLoaded', () => {
-            // Wait for countries to be selected
             setTimeout(() => {
-                initializeCalculator();
-                makeCalculatorDraggable();
-            }, 1000);
+                window.professionalCalculator.init();
+            }, 500);
         });
 
 // Update calculator when countries change
