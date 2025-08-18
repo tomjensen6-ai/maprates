@@ -4518,7 +4518,27 @@ currentChart.update('none');
         // ============= MINI CALCULATOR WIDGET =============
         let calculatorComparisons = [];
         let calculatorMinimized = false;
-        
+
+        // Mobile Calculator Detection Wrapper
+        function detectAndInitializeCalculator() {
+            // Check if mobile using DeviceManager
+            if (window.DeviceManager && (window.DeviceManager.isMobile || window.DeviceManager.screenWidth < 768)) {
+                console.log('📱 Mobile detected - using mobile calculator');
+                if (window.professionalCalculator) {
+                    window.professionalCalculator.init();
+                }
+                // Hide desktop calculator
+                const desktopCalc = document.getElementById('miniCalculator');
+                if (desktopCalc) {
+                    desktopCalc.style.display = 'none';
+                }
+            } else {
+                console.log('💻 Desktop detected - using desktop calculator');
+                // Use existing desktop calculator
+                initializeCalculator();
+            }
+        }
+
         // Initialize calculator with current currencies
         function initializeCalculator() {
             if (homeCountry && destinationCountry) {
@@ -4534,17 +4554,25 @@ currentChart.update('none');
         }
         
         // Calculate conversion
+        // Calculate conversion
         function calculateConversion(direction) {
             const amount1Input = document.getElementById('calcAmount1');
             const amount2Input = document.getElementById('calcAmount2');
             const currency1 = document.getElementById('calcCurrency1').value;
             const currency2 = document.getElementById('calcCurrency2').value;
             
-            // Get current exchange rate
-            const rate = getExchangeRate(currency1, currency2);
+            // Get current exchange rate using the global function
+            const rate = window.getExchangeRate ? window.getExchangeRate(currency1, currency2) : null;
             
             if (!rate) {
-                console.warn('Exchange rate not available');
+                console.warn('Exchange rate not available for', currency1, 'to', currency2);
+                // Show "No rate" instead of stopping
+                if (direction === 'from') {
+                    amount2Input.value = 'No rate';
+                } else {
+                    amount1Input.value = 'No rate';
+                }
+                document.getElementById('calcRateInfo').textContent = 'Rate unavailable';
                 return;
             }
             
@@ -4559,8 +4587,10 @@ currentChart.update('none');
             }
             
             // Update rate display
-            document.getElementById('calcRateInfo').textContent = 
-                `1 ${currency1} = ${rate.toFixed(4)} ${currency2}`;
+            const rateInfo = document.getElementById('calcRateInfo');
+            if (rateInfo) {
+                rateInfo.textContent = `1 ${currency1} = ${rate.toFixed(4)} ${currency2}`;
+            }
         }
         
         function swapCalculatorCurrencies() {
@@ -4580,29 +4610,59 @@ currentChart.update('none');
         
         // Get exchange rate between any two currencies
         function getExchangeRate(from, to) {
-            // First check if we have direct rate
+            // Check for same currency
+            if (from === to) return 1;
+            
+            // First check if we have direct rate from exchangeRateManager
             if (window.exchangeRateManager) {
                 const rates = exchangeRateManager.getCurrentRates();
-                if (rates && rates[to]) {
-                    return rates[to];
+                if (rates) {
+                    // Check if we have the home currency as base
+                    const homeCurrency = homeCountry ? getCurrencyForCountry(homeCountry.name) : null;
+                    
+                    if (homeCurrency && from === homeCurrency.code && rates[to]) {
+                        return rates[to];
+                    }
+                    
+                    // Try inverse rate
+                    if (homeCurrency && to === homeCurrency.code && rates[from]) {
+                        return 1 / rates[from];
+                    }
+                    
+                    // Cross rate calculation if both currencies are in rates
+                    if (rates[from] && rates[to]) {
+                        return rates[to] / rates[from];
+                    }
                 }
             }
             
-            // Fallback to stored conversion rate if it matches
+            // Fallback to stored conversion rate if it matches current selection
             if (homeCountry && destinationCountry) {
                 const homeCurrency = getCurrencyForCountry(homeCountry.name);
                 const destCurrency = getCurrencyForCountry(destinationCountry.name);
                 
                 if (from === homeCurrency.code && to === destCurrency.code) {
-                    return conversionRate;
+                    // Use the current stored rate
+                    const currentRates = exchangeRateManager.getCurrentRates();
+                    if (currentRates && currentRates[destCurrency.code]) {
+                        return currentRates[destCurrency.code];
+                    }
                 } else if (from === destCurrency.code && to === homeCurrency.code) {
-                    return 1 / conversionRate;
+                    // Inverse of stored rate
+                    const currentRates = exchangeRateManager.getCurrentRates();
+                    if (currentRates && currentRates[destCurrency.code]) {
+                        return 1 / currentRates[destCurrency.code];
+                    }
                 }
             }
             
-            // Default fallback
-            return from === to ? 1 : 0.85; // Default to approximate USD/EUR rate
+            // NEVER return fake data - return null if no rate available
+            console.warn(`No exchange rate available for ${from} to ${to}`);
+            return null;
         }
+        
+        // Make it globally available for both calculators
+        window.getExchangeRate = getExchangeRate;
         
         // Update rate display in calculator
         function updateCalculatorRateDisplay(from, to, rate) {
@@ -4961,22 +5021,44 @@ currentChart.update('none');
             }
             
             async getRealExchangeRate(from, to) {
-                // Use real exchange rate manager
-                if (window.exchangeRateManager) {
-                    const rates = exchangeRateManager.getCurrentRates();
-                    if (rates && rates[to]) {
-                        return rates[to];
+                // Check for same currency
+                if (from === to) return 1;
+                
+                // Try to use the global getExchangeRate function first
+                if (window.getExchangeRate) {
+                    const rate = window.getExchangeRate(from, to);
+                    if (rate !== null) {
+                        return rate;
                     }
-                    
-                    // Fetch if not cached
+                }
+                
+                // If no cached rate, fetch fresh data
+                if (window.exchangeRateManager) {
                     try {
-                        const homeCurrency = { code: from };
-                        await exchangeRateManager.fetchExchangeRates(homeCurrency);
+                        console.log(`📡 Fetching fresh rate for ${from} to ${to}`);
+                        
+                        // Create a temporary currency object for the fetch
+                        const tempCurrency = { 
+                            code: from,
+                            symbol: window.CURRENCY_SYMBOLS?.[from]?.symbol || from,
+                            name: window.CURRENCY_SYMBOLS?.[from]?.name || from
+                        };
+                        
+                        // Fetch fresh rates with 'from' as base
+                        await exchangeRateManager.fetchExchangeRates(tempCurrency);
+                        
+                        // Get the newly fetched rates
                         const newRates = exchangeRateManager.getCurrentRates();
-                        return newRates?.[to] || null;
+                        
+                        // Check if we got the rate we need
+                        if (newRates && newRates[to]) {
+                            console.log(`✅ Got rate: 1 ${from} = ${newRates[to]} ${to}`);
+                            return newRates[to];
+                        }
+                        
+                        console.warn(`⚠️ Rate for ${to} not found in fetched data`);
                     } catch (error) {
-                        console.error('Failed to fetch rate:', error);
-                        return null;
+                        console.error(`❌ Failed to fetch rate for ${from} to ${to}:`, error);
                     }
                 }
                 
@@ -5007,11 +5089,11 @@ currentChart.update('none');
         window.professionalCalculator = new ProfessionalCalculator();
         
         // Initialize when DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                window.professionalCalculator.init();
-            }, 500);
-        });
+        //document.addEventListener('DOMContentLoaded', () => {
+          //  setTimeout(() => {
+          //      window.professionalCalculator.init();
+          //  }, 500);
+       // });
 
 // Update calculator when countries change
 const originalSelectCountryByName = selectCountryByName;
@@ -5053,15 +5135,33 @@ selectCountryByName = function(countryName, type, providedFeature = null) {
             }
         }
 
-        // Ensure calculator is in body, not hidden div
+        // Ensure calculator is properly initialized and positioned
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
-                const calc = document.getElementById('miniCalculator');
-                if (calc && calc.parentElement.id === 'exchangeResult') {
-                    document.body.appendChild(calc);
-                    console.log('✅ Calculator moved to body');
+                // Initialize appropriate calculator based on device
+                if (window.DeviceManager && (window.DeviceManager.isMobile || window.DeviceManager.screenWidth < 768)) {
+                    console.log('📱 Mobile detected - initializing mobile calculator');
+                    if (window.professionalCalculator) {
+                        window.professionalCalculator.init();
+                    }
+                    // Hide desktop calculator
+                    const desktopCalc = document.getElementById('miniCalculator');
+                    if (desktopCalc) {
+                        desktopCalc.style.display = 'none';
+                    }
+                } else {
+                    console.log('💻 Desktop detected - initializing desktop calculator');
+                    // Ensure desktop calculator is in body
+                    const calc = document.getElementById('miniCalculator');
+                    if (calc && calc.parentElement.id === 'exchangeResult') {
+                        document.body.appendChild(calc);
+                        console.log('✅ Calculator moved to body');
+                    }
+                    // Initialize desktop calculator
+                    initializeCalculator();
+                    makeCalculatorDraggable();
                 }
-            }, 100);
+            }, 1000);
         });
 
         // Make functions globally available
