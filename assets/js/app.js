@@ -1094,12 +1094,12 @@
             // ACTIVATE AND SHOW CHART CONTAINER
             const container = document.getElementById('chartContainer');
             if (container) {
-                // Force display with important flags
-                container.style.display = 'block !important';
-                container.style.visibility = 'visible';
-                container.style.opacity = '1';
-                container.style.minHeight = '400px';
+                // Remove any conflicting inline styles first
+                container.style.removeProperty('display');
+                
+                // Force display with important using setAttribute
                 container.classList.add('chart-active');
+                container.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 400px !important;');
                 
                 // Ensure wrapper is visible
                 const wrapper = container.querySelector('.chart-wrapper');
@@ -1108,30 +1108,13 @@
                     wrapper.style.minHeight = '300px';
                 }
                 
-                // ACTIVATE AND SHOW CHART CONTAINER
-                const container = document.getElementById('chartContainer');
-                if (container) {
-                    // Remove any conflicting inline styles first
-                    container.style.removeProperty('display');
-                    
-                    // Force display with important
-                    container.classList.add('chart-active');
-                    container.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 400px !important;');
-                    
-                    // Ensure wrapper is visible
-                    const wrapper = container.querySelector('.chart-wrapper');
-                    if (wrapper) {
-                        wrapper.style.display = 'block';
-                        wrapper.style.minHeight = '300px';
-                    }
-                    
-                    console.log('📊 Chart container activated:', {
-                        display: getComputedStyle(container).display,
-                        visibility: getComputedStyle(container).visibility,
-                        height: container.offsetHeight,
-                        hasClass: container.classList.contains('chart-active')
-                    });
-                }
+                console.log('📊 Chart container activated:', {
+                    display: getComputedStyle(container).display,
+                    visibility: getComputedStyle(container).visibility,
+                    height: container.offsetHeight,
+                    hasClass: container.classList.contains('chart-active')
+                });
+            }
             }
             
             // Update chart header with overlay controls
