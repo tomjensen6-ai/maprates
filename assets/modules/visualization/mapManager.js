@@ -1786,6 +1786,25 @@ export class MapManager {
             .classed('selected-home', false)
             .classed('selected-destination', false);
     }
+    
+    // Reset map zoom and position
+    resetMapView() {
+        if (this.svg && this.zoomBehavior) {
+            this.svg.transition()
+                .duration(250)
+                .call(this.zoomBehavior.transform, d3.zoomIdentity);
+            console.log('✅ MapManager: Zoom reset successful');
+            return true;
+        } else if (this.mapGroup) {
+            this.mapGroup.transition()
+                .duration(250)
+                .attr('transform', 'translate(0,0) scale(1)');
+            console.log('✅ MapManager: Transform reset successful');
+            return true;
+        }
+        console.warn('⚠️ MapManager: No svg or mapGroup available for reset');
+        return false;
+    }
 }
 
 // Safari Zoom Issues
