@@ -1315,7 +1315,7 @@
                 disclaimer.textContent = 'Market data for informational purposes. Not investment advice.';
                 chartContainer.appendChild(disclaimer);
             }
-        }
+        //}
 
         function hideChart() {
             // Remove chart-active class and hide container
