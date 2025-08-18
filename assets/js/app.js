@@ -770,6 +770,37 @@
                 console.log('At init - mapInteractionManager available:', !!window.mapInteractionManager);
         }
 
+        // Debug function to check chart visibility
+        window.debugChart = function() {
+            const container = document.getElementById('chartContainer');
+            const canvas = document.getElementById('historicalChart');
+            const wrapper = document.querySelector('.chart-wrapper');
+            
+            console.log('=== CHART DEBUG ===');
+            console.log('Container:', {
+                exists: !!container,
+                display: container?.style.display,
+                visibility: container?.style.visibility,
+                height: container?.offsetHeight,
+                hasActiveClass: container?.classList.contains('chart-active')
+            });
+            console.log('Canvas:', {
+                exists: !!canvas,
+                display: canvas?.style.display,
+                visibility: canvas?.style.visibility,
+                height: canvas?.offsetHeight
+            });
+            console.log('Wrapper:', {
+                exists: !!wrapper,
+                display: wrapper?.style.display,
+                height: wrapper?.offsetHeight
+            });
+            console.log('Chart Manager:', {
+                hasChart: !!window.chartManager?.currentChart,
+                chartDestroyed: window.chartManager?.currentChart?._destroyed
+            });
+        };
+
         function populateDropdowns(countries) {
             const homeSelect = document.getElementById('homeCountry');
             const destSelect = document.getElementById('destinationCountry');
