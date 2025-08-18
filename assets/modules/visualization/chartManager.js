@@ -77,10 +77,10 @@ class ChartManager {
 
     // Hide chart loading
     hideChartLoading() {
-        const wrapper = document.querySelector('.chart-wrapper');
-        if (wrapper) {
-            console.log('🔄 Ensuring chart canvas exists...');
-            wrapper.innerHTML = '<canvas id="historicalChart"></canvas>';
+    const wrapper = document.querySelector('.chart-wrapper');
+    if (wrapper) {
+        console.log('🔄 Ensuring chart canvas exists...');
+        wrapper.innerHTML = '<canvas id="historicalChart" style="display: block !important; visibility: visible !important;"></canvas>';
             
             setTimeout(() => {
                 const canvas = document.getElementById('historicalChart');
