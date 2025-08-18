@@ -1588,7 +1588,58 @@
             }
         }
 
-        
+        // Debug chart visibility
+        window.debugChartVisibility = function() {
+            const container = document.getElementById('chartContainer');
+            const canvas = document.getElementById('historicalChart');
+            const wrapper = document.querySelector('.chart-wrapper');
+            
+            console.log('=== CHART VISIBILITY DEBUG ===');
+            
+            // Container
+            if (container) {
+                const computed = getComputedStyle(container);
+                console.log('Container:', {
+                    exists: true,
+                    display: computed.display,
+                    visibility: computed.visibility,
+                    opacity: computed.opacity,
+                    height: container.offsetHeight + 'px',
+                    minHeight: computed.minHeight,
+                    hasActiveClass: container.classList.contains('chart-active'),
+                    inlineStyle: container.getAttribute('style')
+                });
+            } else {
+                console.log('Container: NOT FOUND');
+            }
+            
+            // Canvas
+            if (canvas) {
+                const computed = getComputedStyle(canvas);
+                console.log('Canvas:', {
+                    exists: true,
+                    display: computed.display,
+                    visibility: computed.visibility,
+                    width: canvas.offsetWidth + 'px',
+                    height: canvas.offsetHeight + 'px'
+                });
+            } else {
+                console.log('Canvas: NOT FOUND');
+            }
+            
+            // Try to force show
+            if (container && container.offsetHeight === 0) {
+                console.log('🔧 Attempting force show...');
+                container.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 400px !important;');
+                
+                setTimeout(() => {
+                    console.log('After force:', {
+                        height: container.offsetHeight + 'px',
+                        display: getComputedStyle(container).display
+                    });
+                }, 100);
+            }
+        };
 
         /**
         * API Configuration
