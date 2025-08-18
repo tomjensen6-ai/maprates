@@ -701,64 +701,51 @@
                     mapResetBtn.addEventListener('click', function(event) {
                         console.log('🎯 Reset button clicked!');
                         
-                        // Try to access the manager
-                        if (window.mapInteractionManager) {
-                            console.log('Found mapInteractionManager instance');
-                            
-                            // Initialize SVG reference if missing
-                            if (!window.mapInteractionManager.svg) {
-                                console.log('Initializing SVG reference...');
-                                window.mapInteractionManager.svg = d3.select('#worldMap');
-                            }
-                            
-                            // Initialize zoom behavior if missing
-                            if (!window.mapInteractionManager.zoomBehavior) {
-                                console.log('Initializing zoom behavior reference...');
-                                // Try to get existing zoom from various sources
-                                if (window.zoomBehavior) {
-                                    window.mapInteractionManager.zoomBehavior = window.zoomBehavior;
-                                } else if (window.mapManager && window.mapManager.zoomBehavior) {
-                                    window.mapInteractionManager.zoomBehavior = window.mapManager.zoomBehavior;
-                                } else {
-                                    // Create new zoom behavior as fallback
-                                    window.mapInteractionManager.zoomBehavior = d3.zoom()
-                                        .scaleExtent([0.5, 8])
-                                        .on('zoom', (event) => {
-                                            d3.select('#worldMap g').attr('transform', event.transform);
-                                        });
-                                }
-                            }
-                            
-                            // Now call reset with references initialized
+                        // Get the SVG and group elements directly
+                        const svg = d3.select('#worldMap');
+                        const mapGroup = svg.select('g');
+                        
+                        if (mapGroup.empty()) {
+                            console.error('❌ Map group not found');
+                            return;
+                        }
+                        
+                        // Try multiple zoom sources in order of preference
+                        const zoom = window.mapZoom || 
+                                     window.zoomBehavior || 
+                                     (window.mapManager && window.mapManager.zoomBehavior) ||
+                                     (window.mapInteractionManager && window.mapInteractionManager.zoomBehavior);
+                        
+                        if (zoom) {
+                            // Best method: Use D3 zoom behavior
                             try {
-                                window.mapInteractionManager.resetMapView();
-                                console.log('✅ Reset method called successfully');
+                                svg.transition()
+                                    .duration(250)
+                                    .call(zoom.transform, d3.zoomIdentity);
+                                console.log('✅ Map reset using zoom behavior');
                             } catch (error) {
-                                console.error('❌ Error calling resetMapView:', error);
-                                
-                                // Fallback: Direct DOM reset
-                                console.log('Attempting direct DOM reset...');
-                                const mapGroup = document.querySelector('#worldMap g');
-                                if (mapGroup) {
-                                    mapGroup.style.transition = 'transform 0.25s ease-out';
-                                    mapGroup.setAttribute('transform', 'translate(0,0) scale(1)');
-                                    setTimeout(() => {
-                                        mapGroup.style.transition = '';
-                                    }, 250);
-                                    console.log('✅ Direct DOM reset applied');
-                                }
+                                console.error('❌ Zoom reset failed:', error);
+                                // Fallback to direct transform
+                                mapGroup.transition()
+                                    .duration(250)
+                                    .attr('transform', 'translate(0,0) scale(1)');
+                                console.log('✅ Map reset using direct transform (fallback)');
                             }
                         } else {
-                            console.log('❌ mapInteractionManager not found, using direct reset');
-                            // Direct reset without manager
-                            const mapGroup = document.querySelector('#worldMap g');
-                            if (mapGroup) {
-                                mapGroup.style.transition = 'transform 0.25s ease-out';
-                                mapGroup.setAttribute('transform', 'translate(0,0) scale(1)');
-                                setTimeout(() => {
-                                    mapGroup.style.transition = '';
-                                }, 250);
-                                console.log('✅ Direct DOM reset applied');
+                            // Direct transform reset as last resort
+                            mapGroup.transition()
+                                .duration(250)
+                                .attr('transform', 'translate(0,0) scale(1)');
+                            console.log('✅ Map reset using direct transform (no zoom found)');
+                        }
+                        
+                        // Also try to call mapInteractionManager's reset if available
+                        if (window.mapInteractionManager && typeof window.mapInteractionManager.resetMapView === 'function') {
+                            try {
+                                window.mapInteractionManager.resetMapView();
+                                console.log('✅ Also called mapInteractionManager.resetMapView()');
+                            } catch (error) {
+                                console.log('⚠️ mapInteractionManager.resetMapView() failed:', error);
                             }
                         }
                     });
@@ -1076,9 +1063,26 @@
             // ACTIVATE AND SHOW CHART CONTAINER
             const container = document.getElementById('chartContainer');
             if (container) {
+                // Force display with important flags
+                container.style.display = 'block !important';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+                container.style.minHeight = '400px';
                 container.classList.add('chart-active');
-                container.style.display = 'block';
-                console.log('📊 Chart container activated with chart-active class');
+                
+                // Ensure wrapper is visible
+                const wrapper = container.querySelector('.chart-wrapper');
+                if (wrapper) {
+                    wrapper.style.display = 'block';
+                    wrapper.style.minHeight = '300px';
+                }
+                
+                console.log('📊 Chart container activated:', {
+                    display: container.style.display,
+                    visibility: container.style.visibility,
+                    height: container.offsetHeight,
+                    hasClass: container.classList.contains('chart-active')
+                });
             }
             
             // Update chart header with overlay controls
