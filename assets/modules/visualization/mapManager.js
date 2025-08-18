@@ -116,9 +116,23 @@ export class MapManager {
         const width = +svg.attr("width");
         const height = +svg.attr("height");
         
-        // Simple zoom setup
+        // Create and store zoom behavior
         const g = svg.append("g");
-        svg.call(d3.zoom().on("zoom", (event) => g.attr("transform", event.transform)));
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 8])
+            .on("zoom", (event) => g.attr("transform", event.transform));
+        
+        // Store zoom behavior for reset functionality
+        this.zoomBehavior = zoom;
+        window.mapZoom = zoom;
+        window.zoomBehavior = zoom;
+        
+        // Apply zoom to SVG
+        svg.call(zoom);
+        
+        // Store references for map interaction manager
+        this.svg = svg;
+        this.mapGroup = g;
         
         let features = [];
         
