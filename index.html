@@ -201,6 +201,201 @@
             bottom: 16px !important;
         }
     }
+
+        /* ===== PROFESSIONAL MOBILE CALCULATOR STYLES ===== */
+        .mobile-calc-toggle {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            z-index: 999;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .mobile-calc-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .mobile-calc-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 40vh;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .mobile-calc-sheet.active {
+            transform: translateY(0);
+        }
+        
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #dadce0;
+            border-radius: 2px;
+            margin: 12px auto;
+            cursor: grab;
+        }
+        
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 16px;
+        }
+        
+        .sheet-header h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #202124;
+        }
+        
+        .sheet-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 16px;
+            font-size: 20px;
+            color: #5f6368;
+            cursor: pointer;
+        }
+        
+        .sheet-content {
+            padding: 0 20px 20px;
+        }
+        
+        .calc-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 12px;
+        }
+        
+        .mobile-calc-input {
+            flex: 1;
+            border: none;
+            background: white;
+            padding: 12px;
+            font-size: 1.25rem;
+            font-weight: 500;
+            border-radius: 8px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .mobile-calc-select {
+            width: 80px;
+            border: none;
+            background: white;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .mobile-calc-swap-btn {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #e8eaed;
+            background: white;
+            border-radius: 22px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.2s;
+        }
+        
+        .mobile-calc-swap-btn:active {
+            background: #f8f9fa;
+            transform: rotate(180deg);
+        }
+        
+        .mobile-rate-info {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+        
+        .mobile-rate-info span {
+            display: block;
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+        
+        #mobileRateDisplay {
+            font-weight: 600;
+            color: #202124;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        
+        /* Show mobile calculator only on mobile devices */
+        @media only screen and (max-width: 768px) {
+            .mobile-calc-toggle {
+                display: flex !important;
+            }
+            
+            /* Hide desktop calculator on mobile */
+            .mini-calculator-widget {
+                display: none !important;
+            }
+        }
+        
+        /* iPhone-specific optimizations */
+        @media only screen and (max-width: 430px) and (-webkit-min-device-pixel-ratio: 2) {
+            .mobile-calc-toggle {
+                bottom: 70px;
+                right: 15px;
+                width: 52px;
+                height: 52px;
+            }
+            
+            .mobile-calc-sheet {
+                max-height: 35vh;
+            }
+            
+            .calc-row {
+                padding: 6px;
+            }
+            
+            .mobile-calc-input {
+                font-size: 1.125rem;
+                padding: 10px;
+            }
+        }
+        
+        /* iPad optimizations */
+        @media only screen and (min-width: 768px) and (max-width: 1024px) {
+            .mini-calculator-widget {
+                width: 320px !important;
+                bottom: 40px !important;
+                right: 40px !important;
+            }
+        }
     </style>
 </head>
 <body>
