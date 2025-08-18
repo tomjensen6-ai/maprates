@@ -1696,3 +1696,48 @@ body {
         min-height: 250px;
     }
 }
+
+/* CRITICAL: Force chart visibility */
+#chartContainer.chart-active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 400px !important;
+}
+
+/* Mobile-specific chart fixes */
+@media only screen and (max-width: 768px) {
+    #chartContainer {
+        padding: 10px;
+        min-height: 350px !important;
+    }
+    
+    .chart-wrapper {
+        min-height: 250px !important;
+        display: block !important;
+    }
+    
+    #historicalChart {
+        display: block !important;
+        visibility: visible !important;
+        min-height: 250px !important;
+        width: 100% !important;
+    }
+}
+
+/* Fix map zoom marks on iPhone */
+#worldMap {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: pan-x pan-y;
+}
+
+#worldMap path {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove iOS zoom artifacts */
+.map-container-primary {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
