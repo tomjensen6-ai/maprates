@@ -1741,3 +1741,28 @@ body {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
 }
+
+/* ============================================
+   HIDE MINI CALCULATOR
+   ============================================ */
+
+/* Hide all calculator elements */
+#miniCalculator,
+.mini-calculator,
+.mini-calculator-widget,
+.calculator-widget,
+#mobileCalcToggle,
+#mobileCalcSheet,
+.mobile-calc-toggle,
+.mobile-calc-sheet {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Also hide any calculator buttons/triggers */
+.calculator-toggle,
+.calc-toggle-btn,
+[data-calculator],
+[onclick*="calculator"] {
+    display: none !important;
+}
