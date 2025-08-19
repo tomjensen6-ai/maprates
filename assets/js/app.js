@@ -1,4 +1,4 @@
-/** 1.2.10
+/** 1.2.11
  * MapRates Pro - Professional Currency Exchange Platform
  * Version: 2.0.0
  * Author: [Your Name/Company]
