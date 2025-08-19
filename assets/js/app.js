@@ -1,4 +1,4 @@
-/**
+/** 1.2.10
  * MapRates Pro - Professional Currency Exchange Platform
  * Version: 2.0.0
  * Author: [Your Name/Company]
@@ -1280,42 +1280,44 @@
         } catch (error) {
             console.error('❌ Error loading chart:', error);
         }
+        
+        // Scroll to chart
+        container.scrollIntoView({ behavior: 'smooth' });
+        
+        // Clear cache if needed
+        if (window.apiManager) {
+            console.log('🗑️ Clearing cache for fresh historical data...');
+            window.apiManager.cache.clear();
+        }
+        
+        // Load initial 7-day data
+        await loadHistoricalData(7);
+        
+        // Show educational context for indicators
+        showIndicatorEducationalInfo();
+        
+        // Subtle footer disclaimer to chart container
+        if (container && !document.getElementById('chartDisclaimer')) {
+            const disclaimer = document.createElement('div');
+            disclaimer.id = 'chartDisclaimer';
+            disclaimer.style.cssText = `
+                margin-top: 12px;
+                padding: 8px 0;
+                border-top: 1px solid #e8eaed;
+                font-size: 0.65rem;
+                color: #9aa0a6;
+                text-align: center;
+                font-style: italic;
+            `;
+            disclaimer.textContent = 'Market data for informational purposes. Not investment advice.';
+            container.appendChild(disclaimer);
+        }
     }
+    
             
             
             
-            // Scroll to chart
-            container.scrollIntoView({ behavior: 'smooth' });
             
-            // Clear cache if needed
-            if (window.apiManager) {
-                console.log('🗑️ Clearing cache for fresh historical data...');
-                window.apiManager.cache.clear();
-            }
-            
-            // Load initial 7-day data
-            await loadHistoricalData(7);
-            
-            // Show educational context for indicators
-            showIndicatorEducationalInfo();
-            // Subtle footer disclaimer to chart container
-            const chartContainer = document.getElementById('chartContainer');
-            if (chartContainer && !document.getElementById('chartDisclaimer')) {
-                const disclaimer = document.createElement('div');
-                disclaimer.id = 'chartDisclaimer';
-                disclaimer.style.cssText = `
-                    margin-top: 12px;
-                    padding: 8px 0;
-                    border-top: 1px solid #e8eaed;
-                    font-size: 0.65rem;
-                    color: #9aa0a6;
-                    text-align: center;
-                    font-style: italic;
-                `;
-                disclaimer.textContent = 'Market data for informational purposes. Not investment advice.';
-                chartContainer.appendChild(disclaimer);
-            }
-        //}
 
         function hideChart() {
             // Remove chart-active class and hide container
