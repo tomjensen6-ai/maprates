@@ -1626,7 +1626,7 @@ body {
 }
 
 /* ============================================
-   CHART VISIBILITY CONTROL
+   CHART VISIBILITY CONTROL - FIXED OVERFLOW
    ============================================ */
 
 /* Hide chart container by default */
@@ -1637,109 +1637,86 @@ body {
 /* Show only when chart-active class is added */
 #chartContainer.chart-active {
     display: block !important;
-    min-height: 400px;
-}
-
-@media (max-width: 768px) {
-    /* Mobile chart sizing - ONLY when active */
-    #chartContainer.chart-active {
-        display: block !important;
-        min-height: 350px !important;
-        overflow: visible !important;
-    }
-    
-    /* Ensure canvas is visible */
-    #exchangeChart,
-    canvas {
-        display: block !important;
-        visibility: visible !important;
-        width: 100% !important;
-        height: 300px !important;
-        min-height: 250px !important;
-        max-height: 400px !important;
-    }
-}
-
-/* Force chart visibility */
-#chartContainer.chart-active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    min-height: 400px;
-}
-
-.chart-wrapper {
-    display: block !important;
-    min-height: 300px;
-    position: relative;
-}
-
-#historicalChart {
-    display: block !important;
-    visibility: visible !important;
-    max-width: 100%;
-    height: auto;
-    min-height: 300px;
-}
-
-/* Mobile-specific fixes */
-@media only screen and (max-width: 768px) {
-    #chartContainer {
-        padding: 10px;
-    }
-    
-    .chart-wrapper {
-        min-height: 250px;
-    }
-    
-    #historicalChart {
-        min-height: 250px;
-    }
-}
-
-/* CRITICAL: Force chart visibility */
-#chartContainer.chart-active {
-    display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     min-height: 400px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    margin: 20px auto !important;
+    max-width: 100% !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+    position: relative !important;
+    z-index: 1 !important;
+    overflow: hidden !important; /* KEY FIX: Prevent chart overflow */
 }
 
-/* Mobile-specific chart fixes */
+/* Chart wrapper - contain the chart properly */
+.chart-wrapper {
+    display: block !important;
+    min-height: 350px !important;
+    max-height: 400px !important; /* KEY FIX: Limit chart height */
+    padding: 20px !important;
+    position: relative !important;
+    width: 100% !important;
+    overflow: hidden !important; /* KEY FIX: Contain chart */
+}
+
+/* Canvas - strict size controls */
+#chartContainer.chart-active canvas,
+#chartContainer.chart-active #historicalChart {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    height: 350px !important; /* Fixed height */
+    max-width: 100% !important;
+    max-height: 350px !important; /* KEY FIX: Prevent overflow */
+    background: white !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Chart info section - ensure proper spacing */
+#chartContainer.chart-active .chart-info {
+    display: block !important;
+    visibility: visible !important;
+    padding: 16px 24px !important;
+    background: #f8f9fa !important;
+    border-top: 1px solid #e8eaed !important;
+    position: relative !important;
+    z-index: 2 !important;
+    clear: both !important;
+    margin-top: 0 !important; /* No gap */
+}
+
+/* Educational info - ensure it appears below chart */
+#indicatorEducationalInfo {
+    position: relative !important;
+    z-index: 3 !important;
+    margin-top: 20px !important; /* Space from chart */
+    clear: both !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Mobile responsive */
 @media only screen and (max-width: 768px) {
-    #chartContainer {
-        padding: 10px;
+    #chartContainer.chart-active {
         min-height: 350px !important;
+        margin: 15px 10px !important;
+        padding: 10px !important;
     }
     
     .chart-wrapper {
         min-height: 250px !important;
-        display: block !important;
+        max-height: 300px !important; /* Smaller on mobile */
+        padding: 15px !important;
     }
     
-    #historicalChart {
-        display: block !important;
-        visibility: visible !important;
-        min-height: 250px !important;
-        width: 100% !important;
+    #chartContainer.chart-active canvas,
+    #chartContainer.chart-active #historicalChart {
+        height: 250px !important;
+        max-height: 250px !important;
     }
-}
-
-/* Fix map zoom marks on iPhone */
-#worldMap {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    touch-action: pan-x pan-y;
-}
-
-#worldMap path {
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Remove iOS zoom artifacts */
-.map-container-primary {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
 }
 
 /* ============================================
@@ -1765,4 +1742,214 @@ body {
 [data-calculator],
 [onclick*="calculator"] {
     display: none !important;
+}
+
+/* ============================================
+   EDUCATIONAL INDICATOR INFO - FIXED LAYOUT
+   ============================================ */
+
+/* Educational Indicator Info - Fixed Layout */
+.indicator-educational-info,
+#indicatorEducationalInfo {
+    background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 0.875rem;
+}
+
+.indicator-educational-info h4,
+#indicatorEducationalInfo h4 {
+    color: #2d3748;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* FIXED: Grid layout to prevent overlap */
+.indicator-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 768px) {
+    .indicator-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Large screens: 4 columns */
+@media (min-width: 1200px) {
+    .indicator-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+}
+
+.indicator-card {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.indicator-card.sma {
+    border-left-color: #4285f4;
+}
+
+.indicator-card.bollinger {
+    border-left-color: #34a853;
+}
+
+.indicator-card.rsi {
+    border-left-color: #ea4335;
+}
+
+.indicator-card.trend {
+    border-left-color: #fbbc04;
+}
+
+.indicator-card strong {
+    margin-bottom: 8px;
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.indicator-card p {
+    margin: 0;
+    color: #4a5568;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.indicator-card em {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #64748b;
+    display: block;
+    font-style: italic;
+}
+
+/* Warning box styling */
+.indicator-warning {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+    color: #c53030;
+    font-size: 0.8rem;
+}
+
+.indicator-warning strong {
+    font-weight: 600;
+}
+
+/* Mobile optimization for indicator cards */
+@media (max-width: 767px) {
+    .indicator-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .indicator-card {
+        min-height: 100px;
+        padding: 12px;
+    }
+    
+    .indicator-card strong {
+        font-size: 0.85rem;
+    }
+    
+    .indicator-card p {
+        font-size: 0.75rem;
+    }
+    
+    .indicator-card em {
+        font-size: 0.7rem;
+    }
+}
+
+/* Team Pin Styles */
+.team-pin {
+    transition: transform 0.2s ease;
+}
+
+.team-pin:hover {
+    transform: scale(1.1);
+}
+
+.pin-marker {
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pin-dot {
+    font-size: 14px;
+}
+
+.pin-label {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Enhanced tooltip on hover */
+.team-pin::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1001;
+}
+
+.team-pin:hover::after {
+    opacity: 1;
+}
+
+/* Team details panel styling */
+#team-details-panel {
+    border: 1px solid #ddd;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }

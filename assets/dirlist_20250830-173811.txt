@@ -1,0 +1,73 @@
+Directory tree for: /Users/tje/projects/MapRates/maprates/assets
+Generated: Sat Aug 30 17:38:11 CEST 2025
+
+.
+config
+css
+data
+│  └─ data/countries
+│  └─ data/teams
+│  │  └─ data/teams/cache
+│  │  └─ data/teams/metadata
+js
+modules
+│  └─ modules/analysis
+│  └─ modules/core
+│  └─ modules/data
+│  └─ modules/intelligence
+│  └─ modules/sports
+│  │  └─ modules/sports/data
+│  │  └─ modules/sports/football
+│  │  └─ modules/sports/shared
+│  └─ modules/ui
+│  └─ modules/visualization
+.DS_Store
+│  └─ config/apiConfig.js
+│  └─ config/constants.js
+│  └─ css/styles.css
+│  └─ data/.DS_Store
+│  │  └─ data/countries/fifa-countries.json
+│  │  └─ data/teams/.DS_Store
+dirlist_20250830-173811.csv
+dirlist_20250830-173811.txt
+│  └─ js/app.js
+│  └─ js/sportsBootstrap.js
+make_dirlist.sh
+│  └─ modules/.DS_Store
+│  │  └─ modules/analysis/aiPredictions.js
+│  │  └─ modules/analysis/technicalIndicators.js
+│  │  └─ modules/core/apiConfigManager.js
+│  │  └─ modules/core/cacheManager.js
+│  │  └─ modules/core/exchangeRateManager.js
+│  │  └─ modules/core/premiumFeaturesManager.js
+│  │  └─ modules/core/stateManager.js
+│  │  └─ modules/data/.DS_Store
+│  │  └─ modules/data/countrySelectionManager.js
+│  │  └─ modules/data/historicalDataManager.js
+│  │  └─ modules/intelligence/conversionRates.js
+│  │  └─ modules/sports/.DS_Store
+│  │  └─ modules/sports/countryMapManager copy.js
+│  │  └─ modules/sports/countryMapManager.js
+│  │  │  └─ modules/sports/data/cacheManager.js
+│  │  │  └─ modules/sports/data/dataTransformer.js
+│  │  │  └─ modules/sports/data/globalCityPinManager.js
+│  │  │  └─ modules/sports/data/globalDataManager.js
+│  │  │  └─ modules/sports/data/globalFootballAtlas.js
+│  │  │  └─ modules/sports/data/openFootballService.js
+│  │  │  └─ modules/sports/data/updateScheduler.js
+│  │  │  └─ modules/sports/data/wikidataService.js
+│  │  │  └─ modules/sports/football/footballDataManager.js
+│  │  │  └─ modules/sports/shared/.DS_Store
+│  │  └─ modules/sports/sportsApp.js
+│  │  └─ modules/sports/tabSwitcher.js
+│  │  └─ modules/ui/chartTooltip.js
+│  │  └─ modules/ui/chartUIManager.js
+│  │  └─ modules/ui/dataExportManager.js
+│  │  └─ modules/ui/mapInteractionManager.js
+│  │  └─ modules/ui/modalManager.js
+│  │  └─ modules/ui/notificationManager.js
+│  │  └─ modules/ui/progressManager.js
+│  │  └─ modules/ui/uiManager.js
+│  │  └─ modules/visualization/chartManager.js
+│  │  └─ modules/visualization/mapManager.js
+│  │  └─ modules/visualization/overlayManager.js

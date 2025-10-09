@@ -8,6 +8,7 @@
  * interactive maps, charts, and data analysis.
  */
 
+
 //Add security PASSWD for testing - until it go Live. 
 (function() {
     // Simple password protection
@@ -102,6 +103,54 @@
                 }
             }
         };
+        // Add this after all your imports but before any other code
+        console.log('🔍 Checking function location...');
+
+        // Check if function exists and where it's coming from
+        if (typeof showIndicatorEducationalInfo === 'function') {
+            console.log('❌ Function already exists! Source:', showIndicatorEducationalInfo.toString().substring(0, 200));
+        } else {
+            console.log('✅ Function not yet defined');
+        }
+
+        // Override/redefine the function to force our version
+        window.showIndicatorEducationalInfo = function() {
+            console.log('🧪 FORCED 999 FUNCTION CALLED');
+            
+            // Remove any existing panel first
+            const existing = document.getElementById('indicatorEducationalInfo');
+            if (existing) existing.remove();
+            
+            const chartInfo = document.querySelector('.chart-info');
+            if (!chartInfo) {
+                console.log('❌ No chart-info found');
+                return;
+            }
+            
+            const infoPanel = document.createElement('div');
+            infoPanel.id = 'indicatorEducationalInfo';
+            infoPanel.style.cssText = `
+                background: red; /* Make it obvious */
+                border: 3px solid blue;
+                border-radius: 8px;
+                padding: 16px;
+                margin: 16px 0;
+                font-size: 0.875rem;
+            `;
+            
+            infoPanel.innerHTML = `
+                <h4 style="color: white;">📚 999 FORCED UPDATE Understanding These Indicators:</h4>
+                <p style="color: white;">This is the FORCED version with 999!</p>
+            `;
+            
+            chartInfo.appendChild(infoPanel);
+            console.log('✅ FORCED 999 panel added');
+        };
+
+        // Also force replace the global function
+        if (window.showIndicatorEducationalInfo) {
+            console.log('🔄 Replacing existing global function');
+        }
         
         // Production flag
         const isProduction = false; // Set to true when deploying
@@ -4504,82 +4553,112 @@ currentChart.update('none');
                         
             console.log('🤖 Multi-currency AI summary displayed');
         }
-        // Add Educational Context for Technical Indicators
-        function showIndicatorEducationalInfo() {
-            if (window.notificationManager) {
-                notificationManager.showIndicatorEducationalInfo();
-            } else {
-                // Keep original implementation as fallback
-                if (document.getElementById('indicatorEducationalInfo')) return;
+        // FORCE OVERRIDE - Put this at the very end of your app.js file
+        console.log('🔄 FORCING function override...');
+
+        // FINAL CLEAN VERSION - Replace the setTimeout function with this:
+        setTimeout(() => {
+            console.log('⏰ Setting up clean indicator function...');
+            
+            window.showIndicatorEducationalInfo = function() {
+                console.log('📚 Clean indicator function executing');
+                
+                // Remove any existing panel
+                const existing = document.getElementById('indicatorEducationalInfo');
+                if (existing) existing.remove();
                 
                 const chartInfo = document.querySelector('.chart-info');
                 if (!chartInfo) return;
                 
                 const infoPanel = document.createElement('div');
                 infoPanel.id = 'indicatorEducationalInfo';
-                infoPanel.style.cssText = `
-                    background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
-                    border: 1px solid #cbd5e0;
-                    border-radius: 8px;
-                    padding: 16px;
-                    margin: 16px 0;
-                    font-size: 0.875rem;
-                `;
+                infoPanel.className = 'indicator-educational-info'; // Use CSS class
                 
                 infoPanel.innerHTML = `
-                    <h4 style="color: #2d3748; margin-bottom: 12px;">📚 Understanding These Indicators (Educational Reference):</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
-                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #4285f4;">
-                            <strong style="color: #4285f4;">📈 SMA (Simple Moving Average)</strong>
-                            <p style="margin: 4px 0; color: #4a5568; font-size: 0.8rem;">
-                                Shows average price over X days. When price is above SMA, it may indicate upward trend.
-                                <br><em>Used by traders to identify trend direction.</em>
-                            </p>
-                        </div>
-                        
-                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #34a853;">
-                            <strong style="color: #34a853;">📊 Bollinger Bands</strong>
-                            <p style="margin: 4px 0; color: #4a5568; font-size: 0.8rem;">
-                                Shows volatility range. Narrow bands = low volatility, Wide bands = high volatility.
-                                <br><em>Helps identify overbought/oversold conditions.</em>
-                            </p>
-                        </div>
-                        
-                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #ea4335;">
-                            <strong style="color: #ea4335;">⚡ RSI (Relative Strength Index)</strong>
-                            <p style="margin: 4px 0; color: #4a5568; font-size: 0.8rem;">
-                                Momentum indicator (0-100). Above 70 = potentially overbought, Below 30 = potentially oversold.
-                                <br><em>Helps identify potential reversal points.</em>
-                            </p>
-                        </div>
-                        
-                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #fbbc04;">
-                            <strong style="color: #fbbc04;">📉 Trend Projections</strong>
-                            <p style="margin: 4px 0; color: #4a5568; font-size: 0.8rem;">
-                                Mathematical extrapolation based on historical patterns. NOT predictions of future prices.
-                                <br><em>For educational understanding only.</em>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div style="
-                        background: #fff5f5;
-                        border: 1px solid #feb2b2;
-                        border-radius: 6px;
-                        padding: 12px;
-                        margin-top: 12px;
-                        color: #c53030;
-                        font-size: 0.8rem;
-                    ">
-                        <strong>⚠️ Educational Notice:</strong> These indicators are for learning purposes only. 
-                        Real trading involves significant risk and requires professional knowledge, licenses, and consideration of many factors 
-                        not shown here. This tool does not provide investment advice.
-                    </div>
-                `;
+                <h4>📚 Understanding These Indicators (Educational Reference):</h4>
+                
+                <!-- SMA Card -->
+                <div style="
+                    background: white; 
+                    padding: 16px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #4285f4; 
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 12px;
+                    width: 100%;
+                    box-sizing: border-box;
+                ">
+                    <strong style="color: #4285f4; display: block; margin-bottom: 8px;">📈 SMA (Simple Moving Average)</strong>
+                    <p style="margin: 0 0 8px 0; color: #4a5568; font-size: 0.8rem; line-height: 1.4;">Shows average price over X days. When price is above SMA, it may indicate upward trend.</p>
+                    <em style="font-size: 0.75rem; color: #64748b;">Used by traders to identify trend direction.</em>
+                </div>
+                
+                <!-- Bollinger Bands Card -->
+                <div style="
+                    background: white; 
+                    padding: 16px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #34a853; 
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 12px;
+                    width: 100%;
+                    box-sizing: border-box;
+                ">
+                    <strong style="color: #34a853; display: block; margin-bottom: 8px;">📊 Bollinger Bands</strong>
+                    <p style="margin: 0 0 8px 0; color: #4a5568; font-size: 0.8rem; line-height: 1.4;">Shows volatility range. Narrow bands = low volatility, Wide bands = high volatility.</p>
+                    <em style="font-size: 0.75rem; color: #64748b;">Helps identify overbought/oversold conditions.</em>
+                </div>
+                
+                <!-- RSI Card -->
+                <div style="
+                    background: white; 
+                    padding: 16px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #ea4335; 
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 12px;
+                    width: 100%;
+                    box-sizing: border-box;
+                ">
+                    <strong style="color: #ea4335; display: block; margin-bottom: 8px;">⚡ RSI (Relative Strength Index)</strong>
+                    <p style="margin: 0 0 8px 0; color: #4a5568; font-size: 0.8rem; line-height: 1.4;">Momentum indicator (0-100). Above 70 = potentially overbought, Below 30 = potentially oversold.</p>
+                    <em style="font-size: 0.75rem; color: #64748b;">Helps identify potential reversal points.</em>
+                </div>
+                
+                <!-- Trend Projections Card -->
+                <div style="
+                    background: white; 
+                    padding: 16px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #fbbc04; 
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 12px;
+                    width: 100%;
+                    box-sizing: border-box;
+                ">
+                    <strong style="color: #fbbc04; display: block; margin-bottom: 8px;">📉 Trend Projections</strong>
+                    <p style="margin: 0 0 8px 0; color: #4a5568; font-size: 0.8rem; line-height: 1.4;">Mathematical extrapolation based on historical patterns. NOT predictions of future prices.</p>
+                    <em style="font-size: 0.75rem; color: #64748b;">For educational understanding only.</em>
+                </div>
+                
+                <!-- Warning Notice -->
+                <div style="
+                    background: #fff5f5; 
+                    border: 1px solid #feb2b2; 
+                    border-radius: 6px; 
+                    padding: 12px; 
+                    color: #c53030; 
+                    font-size: 0.8rem;
+                    width: 100%;
+                    box-sizing: border-box;
+                ">
+                    <strong>⚠️ Educational Notice:</strong> These indicators are for learning purposes only. Real trading involves significant risk and requires professional knowledge.
+                </div>
+            `;
                 
                 chartInfo.appendChild(infoPanel);
-            }
-        }
+            };
+        }, 1000);
 
         function calculateTrendChange(prediction) {
             return aiPredictions.calculateTrendChange(prediction);
