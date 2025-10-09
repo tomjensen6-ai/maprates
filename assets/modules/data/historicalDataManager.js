@@ -2,7 +2,8 @@
 
 class HistoricalDataManager {
     constructor() {
-        this.EXCHANGERATE_HOST_API_KEY = '2104f185d521db5452124c1e9dc4da4d';
+        // All historical calls go via our secure proxy (no key in client)
+        this.PROXY_BASE = 'https://api.veylorcraft.com';
         this.apiManager = null;
         this.progressCallback = null;
     }
