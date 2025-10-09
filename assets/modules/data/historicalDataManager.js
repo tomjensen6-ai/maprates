@@ -30,7 +30,7 @@ class HistoricalDataManager {
         try {
             // First get current rate to establish baseline
             console.log('📡 Getting current rate as baseline...');
-            const currentResponse = await fetch(`https://api.exchangerate-api.com/v4/latest/${homeCurrency.code}`);
+            const currentResponse = await fetch(`https://api.veylorcraft.com/api/rates?endpoint=latest&base=${homeCurrency.code}`);
             const currentData = await currentResponse.json();
             const currentRate = currentData.rates[destCurrency.code];
             
@@ -147,7 +147,7 @@ class HistoricalDataManager {
     async fetchExchangeRateHostData(fromCurrency, toCurrency, date) {
         try {
             // Use the working ExchangeRate.host API with your key
-            const url = `https://api.exchangerate.host/historical?access_key=${this.EXCHANGERATE_HOST_API_KEY}&date=${date}&base=${fromCurrency}&symbols=${toCurrency}`;
+            const url = `${this.PROXY_BASE}/api/rates?endpoint=historical&date=${date}&base=${fromCurrency}&symbols=${toCurrency}`;
             console.log(`📡 ExchangeRate.host API call: ${date} ${fromCurrency}→${toCurrency}`);
             
             const response = await fetch(url);
@@ -387,7 +387,6 @@ class APIManager {
             exchangeratehost: {
                 name: 'ExchangeRate.host',
                 baseUrl: 'https://api.exchangerate.host',
-                apiKey: '2104f185d521db5452124c1e9dc4da4d',
                 rateLimit: 1000,
                 available: true,
                 corsEnabled: true
@@ -461,7 +460,7 @@ class APIManager {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
                 // Use current rate API (works reliably, no CORS issues)
-                const url = `https://api.exchangerate-api.com/v4/latest/${base}`;
+                const url = `https://api.veylorcraft.com/api/rates?endpoint=latest&base=${base}`;
                 console.log(`📡 Fetching current rate: ${url}`);
                 
                 const response = await fetch(url);
