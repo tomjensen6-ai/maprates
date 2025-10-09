@@ -15,17 +15,17 @@ class APIConfigManager {
         // API provider configurations
         this.providers = {
             exchangeratehost: {
-                name: 'ExchangeRate.host',
-                baseUrl: this.isDevelopment 
-                    ? 'https://api.exchangerate.host'
-                    : 'https://maprates-proxy.vercel.app/api/rates', // Use proxy in production
-                apiKey: this.isDevelopment 
-                    ? '2104f185d521db5452124c1e9dc4da4d'  // Only use key in development
-                    : null,  // No key needed in production (proxy handles it)
-                rateLimit: 10000,
-                available: true,
-                corsEnabled: true,
-                useProxy: !this.isDevelopment  // Flag to indicate proxy usage
+              name: 'ExchangeRate.host',
+              baseUrl: this.isDevelopment 
+                  ? 'https://api.exchangerate.host'
+                  : 'https://api.veylorcraft.com/api/rates', // Use branded proxy in production
+              apiKey: this.isDevelopment 
+                  ? '2104f185d521db5452124c1e9dc4da4d'
+                  : null,
+              rateLimit: 10000,
+              available: true,
+              corsEnabled: true,
+              useProxy: !this.isDevelopment
             },
             exchangerate: {
                 name: 'ExchangeRate-API',
