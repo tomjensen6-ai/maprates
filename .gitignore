@@ -423,6 +423,11 @@ docker-compose.local.yml
 *.p12
 *.pfx
 
+# MapRates secrets (do not commit)
+assets/config/apiConfig.js
+assets/config/apiConfig.local.js
+
+
 # End of Ultimate Secure .gitignore
 # Last updated: 2024
 # Remember: When in doubt, exclude it!assets/config/apiConfig.local.js
