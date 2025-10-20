@@ -8,7 +8,11 @@
  * interactive maps, charts, and data analysis.
  */
 
-
+/* 
+ * PASSWORD PROTECTION - DISABLED FOR PUBLIC RELEASE
+ * Uncomment this section for future beta testing
+ * Last used: [Today's date]
+ * 
 //Add security PASSWD for testing - until it go Live. 
 (function() {
     // Simple password protection
@@ -57,7 +61,7 @@
         sessionStorage.setItem('maprates_auth', 'true');
     }
 })();
-
+*/
 
 // ============================================================================
 // MODULE IMPORTS
